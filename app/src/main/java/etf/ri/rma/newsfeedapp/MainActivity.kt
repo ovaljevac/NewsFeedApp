@@ -20,25 +20,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             NewsFeedAppTheme {
-                val screen = NewsFeedScreen()
-                screen.Load()
+                NewsFeedScreen()
                 }
             }
         }
     }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    NewsFeedAppTheme {
-        Greeting("Android")
-    }
-}
