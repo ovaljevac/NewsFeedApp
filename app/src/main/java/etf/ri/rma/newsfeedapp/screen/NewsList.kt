@@ -13,14 +13,14 @@ import androidx.compose.ui.unit.dp
 import etf.ri.rma.newsfeedapp.model.NewsItem
 
 @Composable
-fun NewsList(news_list: List<NewsItem>){
+fun NewsList(newsList: List<NewsItem>){
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 1.dp)
             .testTag("news_list")
     ) {
-        items(news_list){ news ->
+        items(newsList){ news ->
             if(news.isFeatured){
                 FeaturedNewsCard(news = news)
             }

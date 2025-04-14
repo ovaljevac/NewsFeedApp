@@ -14,6 +14,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -32,7 +34,8 @@ fun StandardNewsCard(news: NewsItem){
             Box(
                 modifier = Modifier
                     .size(100.dp)
-                    .padding (end = 12.dp),
+                    .padding (end = 12.dp)
+                    .semantics { contentDescription = "image" },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -40,8 +43,7 @@ fun StandardNewsCard(news: NewsItem){
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
-            Column (
-            ){
+            Column {
                 Text(
                     modifier = Modifier
                         .padding(8.dp),
