@@ -1,5 +1,8 @@
 package etf.ri.rma.newsfeedapp.screen
 
+import etf.ri.rma.newsfeedapp.R
+
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -21,27 +25,27 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import etf.ri.rma.newsfeedapp.model.NewsItem
 
+
+
+
 @Composable
 fun StandardNewsCard(news: NewsItem){
     Card (
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 5.dp)
     ){
         Row(
             modifier = Modifier
                 .padding(8.dp)
         ) {
-            Box(
+            Image(
+                painter = painterResource(id = R.drawable.default_img),
+                contentDescription = "image",
                 modifier = Modifier
                     .size(100.dp)
-                    .padding (end = 12.dp)
-                    .semantics { contentDescription = "image" },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "IMG"
-                )
-            }
+                    .padding(end = 12.dp)
+            )
             Spacer(modifier = Modifier.width(8.dp))
             Column {
                 Text(

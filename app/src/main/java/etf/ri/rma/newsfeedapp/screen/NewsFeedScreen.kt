@@ -1,5 +1,6 @@
 package etf.ri.rma.newsfeedapp.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -22,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import etf.ri.rma.newsfeedapp.data.NewsData
@@ -42,7 +44,8 @@ fun NewsFeedScreen() {
         )
         Column(modifier = Modifier
             .fillMaxSize()
-            .padding(WindowInsets.statusBars.asPaddingValues())) {
+            .padding(WindowInsets.statusBars.asPaddingValues())
+            .background(color = Color(0xFFD2B48C))) {
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -65,9 +68,17 @@ fun NewsFeedScreen() {
                                     modifier = Modifier.size(FilterChipDefaults.IconSize)
                                 )
                             }
+
                         } else {
                             null
-                        },
+                        },colors = FilterChipDefaults.filterChipColors(
+                            containerColor = Color(0xFF3A3A3A),
+                            selectedContainerColor = Color(0xFF6C4F3D),
+                            labelColor = Color.White,
+                            selectedLabelColor = Color.White,
+                            iconColor = Color.White,
+                            selectedLeadingIconColor = Color.White
+                        )
                     )
                 }
             }
