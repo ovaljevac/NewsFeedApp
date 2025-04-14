@@ -9,16 +9,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -42,7 +46,8 @@ fun NewsFeedScreen() {
             Categories("Nauka/tehnologija", "filter_chip_sci"),
             Categories("Crna hronika", "filter_chip_none")
         )
-        Column(modifier = Modifier
+
+    Column(modifier = Modifier
             .fillMaxSize()
             .padding(WindowInsets.statusBars.asPaddingValues())
             .background(color = Color(0xFFD2B48C))) {
@@ -85,7 +90,10 @@ fun NewsFeedScreen() {
             if(newsItemsFilter.isEmpty()){
                 MessageCard("Nema pronađenih vijesti u kategoriji $selected")
             } else {
-                NewsList(newsList = newsItemsFilter)
+                key(selected) {
+                    NewsList(newsList = newsItemsFilter)
+                }
             }
+
         }
     }
