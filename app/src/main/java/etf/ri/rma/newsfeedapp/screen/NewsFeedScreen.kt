@@ -37,6 +37,7 @@ import etf.ri.rma.newsfeedapp.model.Categories
 fun NewsFeedScreen() {
         val newsItemsAll = NewsData.getAllNews()
         var selected by remember { mutableStateOf("Sve") }
+        var filterScreen by remember {mutableStateOf(false)}
         val newsItemsFilter = if (selected == "Sve") newsItemsAll
                              else newsItemsAll.filter { it.category == selected }
         val categories = listOf(
@@ -44,13 +45,15 @@ fun NewsFeedScreen() {
             Categories("Politika", "filter_chip_pol"),
             Categories("Sport", "filter_chip_spo"),
             Categories("Nauka/tehnologija", "filter_chip_sci"),
-            Categories("Crna hronika", "filter_chip_none")
+            Categories("Crna hronika", "filter_chip_none"),
+            Categories("Više filtera ...", "filter_chip_more")
         )
 
     Column(modifier = Modifier
             .fillMaxSize()
             .padding(WindowInsets.statusBars.asPaddingValues())
             .background(color = Color(0xFFD2B48C))) {
+        if (!filterScreen) {
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -60,7 +63,12 @@ fun NewsFeedScreen() {
                         modifier = Modifier
                             .padding(3.dp)
                             .testTag(category.tag),
-                        onClick = { selected = category.cat },
+                        onClick = {
+                            selected = category.cat
+                            if (selected == "Više filtera ...") {
+                                filterScreen = true
+                            }
+                        },
                         label = {
                             Text(category.cat)
                         },
@@ -76,7 +84,7 @@ fun NewsFeedScreen() {
 
                         } else {
                             null
-                        },colors = FilterChipDefaults.filterChipColors(
+                        }, colors = FilterChipDefaults.filterChipColors(
                             containerColor = Color(0xFF3A3A3A),
                             selectedContainerColor = Color(0xFF6C4F3D),
                             labelColor = Color.White,
@@ -87,7 +95,12 @@ fun NewsFeedScreen() {
                     )
                 }
             }
-            if(newsItemsFilter.isEmpty()){
+        }
+
+            if(filterScreen){
+                FilterScreen()
+            }
+            else if(newsItemsFilter.isEmpty() && selected != "Više filtera ..."){
                 MessageCard("Nema pronađenih vijesti u kategoriji $selected")
             } else {
                 key(selected) {
