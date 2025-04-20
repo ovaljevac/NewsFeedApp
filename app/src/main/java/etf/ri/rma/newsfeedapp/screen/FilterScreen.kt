@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -51,8 +52,13 @@ import java.util.Locale
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun FilterScreen(onBack: () -> Unit){
-    var selected by remember { mutableStateOf("Sve") }
+fun FilterScreen(
+    initialCategory: String,
+    initialDateRange: Pair<Long?, Long?>?,
+    initialUnwantedWords: List<String>,
+    onBack: () -> Unit,
+    onApplyFilters: (category: String, dateRange: Pair<Long?, Long?>?, unwantedWords: List<String>) -> Unit
+){
     val categories = listOf(
         Categories("Sve", "filter_chip_all"),
         Categories("Politika", "filter_chip_pol"),
@@ -60,11 +66,20 @@ fun FilterScreen(onBack: () -> Unit){
         Categories("Nauka/tehnologija", "filter_chip_sci"),
         Categories("Crna hronika", "filter_chip_none"),
     )
-    var selectedDate by remember { mutableStateOf<Pair<Long?, Long?>?>(null) }
+    var selectedCategory by remember { mutableStateOf(initialCategory) }
+    var selectedDate by remember { mutableStateOf(initialDateRange) }
+    val unwantedList = remember { mutableStateListOf<String>().apply { addAll(initialUnwantedWords) } }
     var showModal by remember { mutableStateOf(false) }
-    val unwantedList = remember { mutableStateListOf<String>() }
     var text by remember { mutableStateOf("")}
     var backButton by remember { mutableStateOf(false) }
+    val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+    val formatted = selectedDate?.let { (start, end) ->
+        if (start != null && end != null) {
+            "${formatter.format(Date(start))};${formatter.format(Date(end))}"
+        } else {
+            "Nije izabran period"
+        }
+    } ?: "Nije izabran period"
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -74,17 +89,18 @@ fun FilterScreen(onBack: () -> Unit){
                 fontWeight = Bold,
                 modifier = Modifier.padding(3.dp)
             )
+
         FlowRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 3.dp, horizontal = 5.dp)
-                .border(2.dp, Color.Black, RoundedCornerShape(6.dp))
+            //    .border(2.dp, Color.Black, RoundedCornerShape(6.dp))
         ) {
             categories.forEach { category ->
                 FilterChipCustom(
                     category = category,
-                    selected = selected,
-                    onSelected = { selected = it },
+                    selected = selectedCategory,
+                    onSelected = { selectedCategory = it },
                     modifier = Modifier
                         .height(50.dp)
                         .width(110.dp)
@@ -92,19 +108,19 @@ fun FilterScreen(onBack: () -> Unit){
                 )
             }
         }
+        Divider(
+            thickness = 1.dp,
+            modifier = Modifier
+                .padding(horizontal = 3.dp, vertical = 5.dp)
+            ,
+            color = Color.Black
+        )
         Text(
             text = "DATUM: ",
             fontWeight = Bold,
             modifier = Modifier.padding(3.dp)
         )
-        val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-        val formatted = selectedDate?.let { (start, end) ->
-            if (start != null && end != null) {
-                "${formatter.format(Date(start))};${formatter.format(Date(end))}"
-            } else {
-                "Nije izabran period"
-            }
-        } ?: "Nije izabran period"
+
 
         Button(
             colors = ButtonDefaults.buttonColors(
@@ -113,7 +129,6 @@ fun FilterScreen(onBack: () -> Unit){
             ),
             modifier = Modifier
                 .padding(vertical = 3.dp, horizontal = 5.dp)
-                .border(2.dp, Color.Black, RoundedCornerShape(6.dp))
                 .testTag("filter_daterange_button")
                 .padding(horizontal = 3.dp),
             onClick = {
@@ -131,12 +146,20 @@ fun FilterScreen(onBack: () -> Unit){
                 Spacer(modifier = Modifier.weight(1f))
             }
         }
+        Divider(
+            thickness = 1.dp,
+            modifier = Modifier
+                .padding(horizontal = 3.dp, vertical = 5.dp)
+            ,
+            color = Color.Black
+        )
         Text(
             text = "IZABRANI PERIOD: ",
             fontWeight = Bold,
             modifier = Modifier
                 .padding(3.dp)
         )
+
         Text(
             text = "$formatted",
             fontWeight = Bold,
@@ -144,7 +167,6 @@ fun FilterScreen(onBack: () -> Unit){
                 .padding(3.dp)
                 .testTag("filter_daterange_display")
                 .align(alignment = Alignment.CenterHorizontally)
-                .border(2.dp, Color.Black, RoundedCornerShape(6.dp))
                 .padding(horizontal = 6.dp)
         )
         if(showModal){
@@ -156,6 +178,13 @@ fun FilterScreen(onBack: () -> Unit){
                 onDismiss = { showModal = false }
             )
         }
+        Divider(
+            thickness = 1.dp,
+            modifier = Modifier
+                .padding(horizontal = 3.dp, vertical = 5.dp)
+            ,
+            color = Color.Black
+        )
         Text(
             text = "UNESITE ZABRANJENE RIJEČI: ",
             fontWeight = Bold,
@@ -186,12 +215,27 @@ fun FilterScreen(onBack: () -> Unit){
                     .padding(vertical = 3.dp, horizontal = 5.dp)
                     .height(53.dp),
                 onClick = {
-                    if(text.isNotBlank()){
+                    if(text.isNotBlank() && !unwantedList.contains(text)){
                     unwantedList.add(text)
                     text = ""}
                 }
             ) {
                 Text("Dodaj")
+            }
+            Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFE33333),
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(6.dp),
+                modifier = Modifier
+                    .padding(vertical = 3.dp, horizontal = 5.dp)
+                    .height(53.dp),
+                onClick = {
+                    unwantedList.clear()
+                }
+            ) {
+                Text("Očisti")
             }
         }
         UnwantedWordsList(unwantedList)
@@ -209,13 +253,30 @@ fun FilterScreen(onBack: () -> Unit){
                 shape = RoundedCornerShape(6.dp),
                 modifier = Modifier
                     .padding(vertical = 3.dp, horizontal = 5.dp)
-                    .height(53.dp),
+                    .height(53.dp)
+                    .weight(0.5f),
                 onClick = {
                     backButton = !backButton
                     onBack()
                 }
             ) {
                 Text("Nazad")
+            }
+            Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF3A3A3A),
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(6.dp),
+                modifier = Modifier
+                    .padding(vertical = 3.dp, horizontal = 5.dp)
+                    .height(53.dp)
+                    .weight(0.5f),
+                onClick = {
+                    onApplyFilters(selectedCategory, selectedDate, unwantedList.toList())
+                }
+            ) {
+                Text("Primjeni filtere")
             }
         }
     }
