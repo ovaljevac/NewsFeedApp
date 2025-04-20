@@ -27,6 +27,7 @@ fun NewsFeedScreen() {
     var selectedDateRange by remember { mutableStateOf<Pair<Long?, Long?>?>(null) }
     val selectedUnwantedWords = remember { mutableStateListOf<String>() }
     val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+    var selectedNewsId by remember { mutableStateOf<String?>(null) }
     val newsItemsFilter = newsItemsAll.filter { newsItem ->
         val categoryMatch = selectedCategory == "Sve" || newsItem.category == selectedCategory
         val dateMatch = selectedDateRange?.let { (start, end) ->
@@ -81,7 +82,10 @@ fun NewsFeedScreen() {
                     MessageCard("Nema pronađenih vijesti u kategoriji $selectedCategory")
                 } else {
                     key(selectedCategory) {
-                        NewsList(newsList = newsItemsFilter)
+                        NewsList(newsList = newsItemsFilter, onItemClick = { news ->
+                            selectedNewsId  = news.id
+                            currentScreen = "details"
+                        })
                     }
                 }
             }
@@ -98,6 +102,16 @@ fun NewsFeedScreen() {
                     currentScreen = "newsFeed"
                 } ,
                 onBack = { currentScreen = "newsFeed" }
+            )
+        }
+        "details" ->{
+            val selectedNews = newsItemsAll.find { it.id == selectedNewsId }!!
+            NewsDetailsScreen(
+                news = selectedNews,
+                onBack = {currentScreen = "newsFeed"},
+                onNewsSelected = {relatedNews ->
+                    selectedNewsId = relatedNews.id
+                }
             )
         }
     }

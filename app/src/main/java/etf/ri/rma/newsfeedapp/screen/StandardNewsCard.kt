@@ -3,6 +3,7 @@ package etf.ri.rma.newsfeedapp.screen
 import etf.ri.rma.newsfeedapp.R
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,11 +30,15 @@ import etf.ri.rma.newsfeedapp.model.NewsItem
 
 
 @Composable
-fun StandardNewsCard(news: NewsItem){
+fun StandardNewsCard(
+    news: NewsItem,
+    onClick: () -> Unit
+){
     Card (
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 5.dp)
+            .clickable(onClick = onClick)
     ){
         Row(
             modifier = Modifier

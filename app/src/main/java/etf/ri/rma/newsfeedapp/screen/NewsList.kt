@@ -14,7 +14,10 @@ import androidx.compose.ui.unit.dp
 import etf.ri.rma.newsfeedapp.model.NewsItem
 
 @Composable
-fun NewsList(newsList: List<NewsItem>){
+fun NewsList(
+    newsList: List<NewsItem>,
+    onItemClick: (NewsItem) -> Unit
+){
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -23,10 +26,10 @@ fun NewsList(newsList: List<NewsItem>){
     ) {
         items(newsList){ news ->
             if(news.isFeatured){
-                FeaturedNewsCard(news = news)
+                FeaturedNewsCard(news = news, onClick = {onItemClick(news)})
             }
             else {
-                StandardNewsCard(news = news)
+                StandardNewsCard(news = news, onClick = {onItemClick(news)})
             }
             Spacer(modifier = Modifier.height(5.dp))
 

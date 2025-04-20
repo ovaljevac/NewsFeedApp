@@ -1,8 +1,6 @@
 package etf.ri.rma.newsfeedapp.screen
-import androidx.compose.foundation.background
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -18,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -27,7 +24,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -36,15 +32,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import etf.ri.rma.newsfeedapp.customcomposables.DateRangePickerModal
 import etf.ri.rma.newsfeedapp.customcomposables.FilterChipCustom
+import etf.ri.rma.newsfeedapp.customcomposables.UnwantedWordsList
 import etf.ri.rma.newsfeedapp.model.Categories
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -57,8 +51,12 @@ fun FilterScreen(
     initialDateRange: Pair<Long?, Long?>?,
     initialUnwantedWords: List<String>,
     onBack: () -> Unit,
-    onApplyFilters: (category: String, dateRange: Pair<Long?, Long?>?, unwantedWords: List<String>) -> Unit
+    onApplyFilters: (category: String, dateRange: Pair<Long?, Long?>?, unwantedWords: List<String>) -> Unit,
+
 ){
+    BackHandler {
+        onBack()
+    }
     val categories = listOf(
         Categories("Sve", "filter_chip_all"),
         Categories("Politika", "filter_chip_pol"),
@@ -213,9 +211,14 @@ fun FilterScreen(
                 shape = RoundedCornerShape(6.dp),
                 modifier = Modifier
                     .padding(vertical = 3.dp, horizontal = 5.dp)
-                    .height(53.dp),
+                    .height(53.dp)
+                    .testTag("filter_unwanted_add_button"),
                 onClick = {
-                    if(text.isNotBlank() && !unwantedList.contains(text)){
+                    val cleanText = text.trim()
+                    if(
+                        cleanText.isNotBlank() &&
+                        unwantedList.none { it.trim().equals(cleanText, ignoreCase = true)}
+                        )  {
                     unwantedList.add(text)
                     text = ""}
                 }
@@ -238,7 +241,10 @@ fun FilterScreen(
                 Text("Očisti")
             }
         }
-        UnwantedWordsList(unwantedList)
+        UnwantedWordsList(
+            unwantedList,
+            modifier = Modifier.testTag("filter_unwanted_list")
+        )
         Spacer(modifier = Modifier.weight(1f))
         Row(
             verticalAlignment = Alignment.Bottom,
