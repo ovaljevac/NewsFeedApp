@@ -159,7 +159,7 @@ fun FilterScreen(
         )
 
         Text(
-            text = "$formatted",
+            text = formatted,
             fontWeight = Bold,
             modifier = Modifier
                 .padding(3.dp)
@@ -277,12 +277,13 @@ fun FilterScreen(
                 modifier = Modifier
                     .padding(vertical = 3.dp, horizontal = 5.dp)
                     .height(53.dp)
-                    .weight(0.5f),
+                    .weight(0.5f)
+                    .testTag("filter_apply_button"),
                 onClick = {
                     onApplyFilters(selectedCategory, selectedDate, unwantedList.toList())
                 }
             ) {
-                Text("Primjeni filtere")
+                Text("Primijeni filtere")
             }
         }
     }

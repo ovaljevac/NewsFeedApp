@@ -28,7 +28,15 @@ fun UnwantedWordsList (
             .fillMaxWidth()
             .background(color = Color.White)
     ){
-        LazyColumn {
+        if (unwantedWordsList.isEmpty()) {
+            Text(
+                text = "Nema unesenih riječi.",
+                modifier = Modifier.padding(8.dp)
+            )
+        } else
+        LazyColumn (
+            modifier = modifier
+        ){
             items(unwantedWordsList) { word ->
                 Column() {
                     Text(

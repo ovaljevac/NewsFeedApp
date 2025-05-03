@@ -18,11 +18,11 @@ import etf.ri.rma.newsfeedapp.model.Categories
 
 @Composable
 fun FilterChipCustom(
+    modifier: Modifier = Modifier,
     category: Categories,
     selected: String,
     onSelected: (String) -> Unit,
     filterScreen: () -> Unit = {},
-    modifier: Modifier = Modifier
 ) {
     FilterChip(
         modifier = modifier

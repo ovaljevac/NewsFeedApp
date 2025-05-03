@@ -31,13 +31,9 @@ fun NewsFeedScreen() {
     val newsItemsFilter = newsItemsAll.filter { newsItem ->
         val categoryMatch = selectedCategory == "Sve" || newsItem.category == selectedCategory
         val dateMatch = selectedDateRange?.let { (start, end) ->
-            val itemDate = try {
-                formatter.parse(newsItem.publishedDate)?.time
-            } catch (e: Exception) {
-                null
-            }
+            val itemDate = formatter.parse(newsItem.publishedDate)?.time
             itemDate != null && itemDate in (start ?: Long.MIN_VALUE)..(end ?: Long.MAX_VALUE)
-        } ?: true
+        } != false
         val unwantedMatch = selectedUnwantedWords.none { unwantedWord ->
             newsItem.title.contains(unwantedWord, ignoreCase = true) ||
                     newsItem.snippet.contains(unwantedWord, ignoreCase = true)
@@ -45,12 +41,12 @@ fun NewsFeedScreen() {
         categoryMatch && dateMatch && unwantedMatch
     }
     val categories = listOf(
+        Categories("Više filtera ...", "filter_chip_more"),
         Categories("Sve", "filter_chip_all"),
         Categories("Politika", "filter_chip_pol"),
         Categories("Sport", "filter_chip_spo"),
         Categories("Nauka/tehnologija", "filter_chip_sci"),
         Categories("Crna hronika", "filter_chip_none"),
-        Categories("Više filtera ...", "filter_chip_more")
     )
     when (currentScreen) {
         "newsFeed" ->
