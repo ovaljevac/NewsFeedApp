@@ -156,7 +156,7 @@ fun NewsDetailsScreen(
                     .padding(vertical = 3.dp, horizontal = 5.dp)
                     .height(53.dp)
                     .weight(0.5f)
-                    .testTag("details_close_buttonjm"),
+                    .testTag("details_close_button"),
                 onClick = {
                     backButton = !backButton
                     onBack()
