@@ -13,21 +13,24 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import etf.ri.rma.newsfeedapp.customcomposables.FilterChipCustom
 import etf.ri.rma.newsfeedapp.data.NewsData
 import etf.ri.rma.newsfeedapp.model.Categories
+import etf.ri.rma.newsfeedapp.model.FilterViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
-fun NewsFeedScreen() {
+fun NewsFeedScreen(
+    navController: NavController,
+    viewModel: FilterViewModel
+) {
     val newsItemsAll = NewsData.getAllNews()
-    var selectedCategory by remember { mutableStateOf("Sve") }
-    var currentScreen by remember { mutableStateOf("newsFeed") }
-    var selectedDateRange by remember { mutableStateOf<Pair<Long?, Long?>?>(null) }
-    val selectedUnwantedWords = remember { mutableStateListOf<String>() }
+    var selectedCategory = viewModel.selectedCategory
+    var selectedDateRange = viewModel.selectedDateRange
+    val selectedUnwantedWords = viewModel.unwantedWords
     val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-    var selectedNewsId by remember { mutableStateOf<String?>(null) }
     val newsItemsFilter = newsItemsAll.filter { newsItem ->
         val categoryMatch = selectedCategory == "Sve" || newsItem.category == selectedCategory
         val dateMatch = selectedDateRange?.let { (start, end) ->
@@ -48,67 +51,37 @@ fun NewsFeedScreen() {
         Categories("Nauka/tehnologija", "filter_chip_sci"),
         Categories("Crna hronika", "filter_chip_none"),
     )
-    when (currentScreen) {
-        "newsFeed" ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-
-                LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    items(categories) { category ->
-                        FilterChipCustom(
-                            category = category,
-                            selected = selectedCategory,
-                            onSelected = {
-                                if (it == "Više filtera ...") {
-                                    currentScreen = "filter"
-                                } else {
-                                    selectedCategory = it
-                                }
-                            },
-                            filterScreen = { currentScreen = "filter" }
-                        )
-                    }
-                }
-                if (newsItemsFilter.isEmpty() && selectedCategory != "Više filtera ...") {
-                    MessageCard("Nema pronađenih vijesti u kategoriji $selectedCategory")
-                } else {
-                    key(selectedCategory) {
-                        NewsList(newsList = newsItemsFilter, onItemClick = { news ->
-                            selectedNewsId  = news.id
-                            currentScreen = "details"
-                        })
-                    }
-                }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            items(categories) { category ->
+                FilterChipCustom(
+                    category = category,
+                    selected = selectedCategory,
+                    onSelected = {
+                        if (it == "Više filtera ...") {
+                            navController.navigate("filter")
+                        } else {
+                            viewModel.selectedCategory = it
+                        }
+                                 },
+                    filterScreen = { navController.navigate("filter") }
+                )
             }
-        "filter" -> {
-            FilterScreen(
-                initialCategory = selectedCategory,
-                initialDateRange = selectedDateRange,
-                initialUnwantedWords = selectedUnwantedWords.toList(),
-                onApplyFilters = { category, dateRange, unwantedWords ->
-                    selectedCategory = category
-                    selectedDateRange = dateRange
-                    selectedUnwantedWords.clear()
-                    selectedUnwantedWords.addAll(unwantedWords)
-                    currentScreen = "newsFeed"
-                } ,
-                onBack = { currentScreen = "newsFeed" }
-            )
         }
-        "details" ->{
-            val selectedNews = newsItemsAll.find { it.id == selectedNewsId }!!
-            NewsDetailsScreen(
-                news = selectedNews,
-                onBack = {currentScreen = "newsFeed"},
-                onNewsSelected = {relatedNews ->
-                    selectedNewsId = relatedNews.id
-                }
-            )
+        if (newsItemsFilter.isEmpty() && selectedCategory != "Više filtera ...") {
+            MessageCard("Nema pronađenih vijesti u kategoriji $selectedCategory")
+        } else {
+            key(selectedCategory) {
+                NewsList(newsList = newsItemsFilter, onItemClick = { news ->
+                    navController.navigate("details/${news.id}")
+                })
+            }
         }
     }
 }

@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import etf.ri.rma.newsfeedapp.screen.NewsFeedScreen
 import etf.ri.rma.newsfeedapp.ui.theme.NewsFeedAppTheme
-
+import etf.ri.rma.newsfeedapp.navigation.NewsFeedAppNavHost
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
                         padding(WindowInsets.statusBars.asPaddingValues()),
                     color = Color(0xFFD2B48C)
                 ) {
-                    NewsFeedScreen()
+                    NewsFeedAppNavHost()
                 }
             }
         }

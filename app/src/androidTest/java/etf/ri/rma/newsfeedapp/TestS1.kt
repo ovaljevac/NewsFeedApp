@@ -10,6 +10,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
+import androidx.navigation.NavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import etf.ri.rma.newsfeedapp.data.NewsData
 import etf.ri.rma.newsfeedapp.screen.NewsFeedScreen
@@ -33,7 +34,10 @@ class TestS1 {
     @Before
     fun setContentForTests() {
         assertTrue (message = "Nemate dovoljno vijesti!", actual = NewsData.getAllNews().count()>=20)
-        composeTestRule.setContent { NewsFeedScreen() }
+        composeTestRule.setContent { NewsFeedScreen(
+            navController = TODO(),
+            viewModel = TODO()
+        ) }
     }
 
 
