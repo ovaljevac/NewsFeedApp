@@ -1,27 +1,32 @@
 package etf.ri.rma.newsfeedapp.data
 
+import android.R.attr.category
+import com.google.gson.annotations.SerializedName
 import etf.ri.rma.newsfeedapp.model.NewsItem
 
 data class NewsItemDto(
-    val uuid: String,
-    val title: String,
-    val description: String?,
-    val source: String?,
-    val published_at: String?,
-    val url: String?,
-    val image_url: String?,
-    val category: String?
-)
+    @SerializedName("uuid") val uuid: String,
+    @SerializedName("title") val title: String,
+    @SerializedName("description") val description: String?,
+    @SerializedName("snippet") val snippet: String?,
+    @SerializedName("image_url") val imageUrl: String?,
+    @SerializedName("categories") val categories: List<String>?,
+    @SerializedName("source") val source: String?,
+    @SerializedName("published_at") val publishedAt: String?
+){
 
-fun NewsItemDto.toNewsItem(): NewsItem {
+fun toNewsItem(): NewsItem {
+    val preferredCategory = categories?.firstOrNull { it != "general" } ?: categories?.firstOrNull() ?: "general"
+
     return NewsItem(
         uuid = uuid,
         title = title,
-        snippet = description ?: "",
-        imageUrl = image_url,
-        category = category ?: "general",
+        snippet = snippet ?: (description ?: ""),
+        imageUrl = imageUrl,
+        category = preferredCategory,
         isFeatured = false,
         source = source ?: "",
-        publishedDate = published_at ?: ""
+        publishedDate = publishedAt?.substring(0, 10) ?: ""
     )
+}
 }

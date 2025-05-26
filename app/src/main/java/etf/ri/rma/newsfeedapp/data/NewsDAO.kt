@@ -19,18 +19,118 @@ class NewsDAO (
 
     private fun getInitialStories(): List<NewsItem> {
         return listOf(
-            NewsItem("1", "NASA otkrila novu planetu", "Zanimljivo otkriće u galaksiji XYZ", null, "Nauka/tehnologija", false, "NASA", "2024-05-01"),
-            NewsItem("2", "Politička kriza u zemlji", "Nova vlada formirana", null, "Politika", true, "BBC", "2024-05-02"),
-            NewsItem("3", "Rezultati fudbalske utakmice", "Tim A pobijedio Tim B", null, "Sport", false, "ESPN", "2024-05-03"),
-            NewsItem("4", "Zdravstveni savjeti za ljeto", "Kako se zaštititi od sunca", null, "Health", false, "HealthLine", "2024-05-04"),
-            NewsItem("5", "Najnoviji film dominira kinima", "Fantastična akcija", null, "Entertainment", true, "IMDb", "2024-05-05"),
-            NewsItem("6", "Biznis strategije 2024", "Kako povećati profit?", null, "Business", false, "Forbes", "2024-05-06"),
-            NewsItem("7", "Nova tehnološka inovacija", "Smartphone koji lebdi?", null, "Tech", false, "TechRadar", "2024-05-07"),
-            NewsItem("8", "Recept dana: Musaka", "Lako i ukusno", null, "Food", false, "Coolinarika", "2024-05-08"),
-            NewsItem("9", "Turistička sezona počinje", "Top 5 destinacija", null, "Travel", false, "TripAdvisor", "2024-05-09"),
-            NewsItem("10", "Generalne vijesti", "Dogodilo se danas...", null, "General", false, "Al Jazeera", "2024-05-10"),
+            // 🟢 SPORTS
+            NewsItem(
+                uuid = "b1c32c14-085b-41b8-b445-e2248877b169",
+                title = "Will Zalatoris undergoes surgery for herniated disks",
+                snippet = "Open Extended Reactions\n\nFormer PGA Tour Rookie of the Year Will Zalatoris had another surgery to correct two herniated disks in his back and will miss the rest...",
+                imageUrl = "https://a.espncdn.com/combiner/i?img=%2Fphoto%2F2024%2F0306%2Fr1300621_1296x729_16%2D9.jpg",
+                category = "sports",
+                isFeatured = false,
+                source = "espn.com",
+                publishedDate = "2025-05-26"
+            ),
+            NewsItem(
+                uuid = "7bd78d1c-eb7c-429a-8652-3284cea874c7",
+                title = "Sportsnet.ca",
+                snippet = "",
+                imageUrl = "https://d2ml1l8vdyfdxz.cloudfront.net/favicon.ico",
+                category = "sports",
+                isFeatured = false,
+                source = "sportsnet.ca",
+                publishedDate = "2025-05-26"
+            ),
+
+            // 🟢 TECH
+            NewsItem(
+                uuid = "57c8fd90-04f9-4cce-9d61-1d921538286f",
+                title = "Managerka wróciła do Ringier Axel Springer Polska po latach pracy w TVN",
+                snippet = "Dla Katarzyny Szczekali to powrót to Ringier Axel Springer Polska. Kilka lat (2010-2013) pracowała tam u showbiznesu.\n\nPrzez ostatnie 11 lat radila je u TVN.",
+                imageUrl = "https://static.wirtualnemedia.pl/media/new/googleDiscovery/6831f8fbba31d_katarzyna-szczekala.webp",
+                category = "tech",
+                isFeatured = false,
+                source = "wirtualnemedia.pl",
+                publishedDate = "2025-05-26"
+            ),
+            NewsItem(
+                uuid = "f129e959-aeb6-4790-b0f1-924dbdfaddf0",
+                title = "Дачникам раскрыли способы избавиться от колорадского жука",
+                snippet = "Агроном Воронова: Народные способы борьбы с колорадским жуком бесполезны.",
+                imageUrl = "https://icdn.lenta.ru/images/2025/05/26/23/20250526233817514/share_d6ce24a6b3b2fc877c367c646066b230.jpg",
+                category = "tech",
+                isFeatured = false,
+                source = "lenta.ru",
+                publishedDate = "2025-05-26"
+            ),
+
+            // 🟢 GENERAL
+            NewsItem(
+                uuid = "3422affa-984e-4a00-8475-0e29248771b3",
+                title = "Farmers coming to terms with how much they've lost after devastating NSW floods",
+                snippet = "Tony Buttsworth describes his farm on NSW's Mid North Coast as \"the heart and soul\" of his family. Now, the proud farmer can barely recognize it.",
+                imageUrl = "https://live-production.wcms.abc-cdn.net.au/95205466e7c72088b09849eee69c5cfa?impolicy=wcms_watermark_news&cropH=1125&cropW=2000&xPos=0&yPos=139&width=862&height=485&imformat=generic",
+                category = "general",
+                isFeatured = false,
+                source = "abc.net.au",
+                publishedDate = "2025-05-26"
+            ),
+            NewsItem(
+                uuid = "01713745-fe68-460e-998e-5734a414e77e",
+                title = "Roque Dalton revive con un poemario inédito",
+                snippet = "Hasta ahora, algunos textos sueltos del libro «El amor me cae más mal que la primavera» del poeta salvadoreño Roque Dalton se habían podido disfrutar.",
+                imageUrl = "https://ultimasnoticias.com.ve/wp-content/uploads/2025/05/photo_5012667640266731179_y-web.jpg",
+                category = "general",
+                isFeatured = false,
+                source = "ultimasnoticias.com.ve",
+                publishedDate = "2025-05-26"
+            ),
+
+            // 🟢 POLITICS (ručno dodano iz general kategorije s političkim kontekstom)
+            NewsItem(
+                uuid = "ba88e999-0e4c-4d47-9d18-96a715cd0c8f",
+                title = "Prensa salvadoreña denuncia “escalada autoritaria” de Bukele",
+                snippet = "La Asociación de Periodistas de El Salvador denunció el aumento de la “persecución” contra medios de comunicación y defensores de derechos humanos.",
+                imageUrl = "https://ultimasnoticias.com.ve/wp-content/uploads/2025/05/descarga-1.jpg",
+                category = "politics",
+                isFeatured = false,
+                source = "ultimasnoticias.com.ve",
+                publishedDate = "2025-05-26"
+            ),
+            NewsItem(
+                uuid = "d6914f1a-fe91-4560-971e-6826a6d9f539",
+                title = "Incêndio obriga a suspender operações na maior refinaria do Equador",
+                snippet = "\"Temos um depósito de fuelóleo que se incendiou. A situação está sob controlo\", izjavila ministrica energetike.",
+                imageUrl = "https://media-manager.noticiasaominuto.com/1280/naom_6834c22d40aa5.webp?crop_params=dW5kZWZpbmVk",
+                category = "politics",
+                isFeatured = false,
+                source = "noticiasaominuto.com",
+                publishedDate = "2025-05-26"
+            ),
+
+            // 🟢 SCIENCE (ručno dodano — simulirana vijest)
+            NewsItem(
+                uuid = "sci-001",
+                title = "NASA otkrila novu egzoplanetu u zoni pogodnoj za život",
+                snippet = "Tim naučnika je potvrdio postojanje planete koja orbitira unutar nastanjive zone udaljene zvijezde.",
+                imageUrl = null,
+                category = "science",
+                isFeatured = false,
+                source = "NASA",
+                publishedDate = "2025-05-25"
+            ),
+            NewsItem(
+                uuid = "sci-002",
+                title = "Znanstvenici razvili novi materijal lakši i jači od čelika",
+                snippet = "Materijal na bazi grafena pokazuje izuzetnu čvrstoću i fleksibilnost, s mogućnostima primjene u građevini i medicini.",
+                imageUrl = null,
+                category = "science",
+                isFeatured = false,
+                source = "Science Daily",
+                publishedDate = "2025-05-24"
+            )
         )
     }
+
 
 
     suspend fun getTopStoriesByCategory(category: String) : List<NewsItem> {

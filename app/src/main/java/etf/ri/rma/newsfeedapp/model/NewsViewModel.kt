@@ -20,31 +20,21 @@ class NewsViewModel : ViewModel() {
     private val dao = NewsDAO(api, apiToken)
     val newsItems = mutableStateListOf<NewsItem>()
 
-    val categoryMap: Map<String, String?> = mapOf(
-        "Sve" to null, // koristi sve vijesti
-        "Politika" to "politics",
-        "Sport" to "sports",
-        "Nauka/tehnologija" to "science",
-        "Crna hronika" to "general",
-        "Biznis" to "business",
-        "Tehnologija" to "tech",
-        "Zdravlje" to "health",
-        "Hrana" to "food",
-        "Putovanja" to "travel"
-    )
+    init {
+        val initial = dao.getAllStories()
+        newsItems.clear()
+        newsItems.addAll(initial)
+    }
+
+
+
 
     fun loadTopStories(category: String) {
         viewModelScope.launch {
             try {
-                val apiCategory = categoryMap[category]
-                val result = if (apiCategory != null) {
-                    dao.getTopStoriesByCategory(apiCategory)
-                }
-                else {
-                    dao.getAllStories() // ako je "Sve"
-                }
-                    newsItems.clear()
-                    newsItems.addAll(result)
+                val result = dao.getTopStoriesByCategory(category)
+                newsItems.clear()
+                newsItems.addAll(result)
             } catch (e: Exception) {
                 e.printStackTrace()
                 println("Greška pri učitavanju vijesti: ${e.message}")

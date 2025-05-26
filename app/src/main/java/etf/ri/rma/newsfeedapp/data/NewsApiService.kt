@@ -9,6 +9,6 @@ interface NewsApiService {
         @Query("category") category: String,
         @Query("api_token") apiToken: String,
         @Query("limit") limit: Int = 3,
-        @Query("locale") locale: String = "en"
+        @Query("language") locale: String = "en"
     ): NewsApiResponse
 }
