@@ -44,7 +44,7 @@ fun NewsFeedAppNavHost(){
         }
         composable("details/{newsId}") { backStackEntry ->
             val newsId = backStackEntry.arguments?.getString("newsId")
-            val news = NewsData.getAllNews().find {it.id == newsId}
+            val news = NewsData.getAllNews().find {it.uuid == newsId}
             news?.let {
                 NewsDetailsScreen(
                     news = it,
@@ -52,7 +52,7 @@ fun NewsFeedAppNavHost(){
                         navController.popBackStack("newsFeed", inclusive = false)
                     },
                     onNewsSelected = { related ->
-                        navController.navigate("details/${related.id}")
+                        navController.navigate("details/${related.uuid}")
                     }
                 )
             }

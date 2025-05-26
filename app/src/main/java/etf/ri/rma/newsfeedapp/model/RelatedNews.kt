@@ -16,7 +16,7 @@ fun getRelatedNews(currentNews: NewsItem): List<NewsItem> {
     val currentDate = formatter.parse(currentNews.publishedDate)?.time
 
     return NewsData.getAllNews()
-        .filter { it.id != currentNews.id && it.category == currentNews.category }
+        .filter { it.uuid != currentNews.uuid && it.category == currentNews.category }
         .mapNotNull { item ->
             val itemDate = formatter.parse(item.publishedDate)?.time
             itemDate?.let {

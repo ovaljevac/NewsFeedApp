@@ -1,7 +1,7 @@
 package etf.ri.rma.newsfeedapp.model
 
 data class NewsItem(
-    val id: String, // koristite kao key za lazylistu i neka bude jedinstveno za svaku vijest
+    val uuid: String, // koristite kao key za lazylistu i neka bude jedinstveno za svaku vijest
     val title: String,
     val snippet: String,
     val imageUrl: String?, // URL slike - ne koristi se sada

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateListOf
@@ -13,24 +14,27 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import etf.ri.rma.newsfeedapp.customcomposables.FilterChipCustom
 import etf.ri.rma.newsfeedapp.data.NewsData
 import etf.ri.rma.newsfeedapp.model.Categories
 import etf.ri.rma.newsfeedapp.model.FilterViewModel
+import etf.ri.rma.newsfeedapp.model.NewsViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
 fun NewsFeedScreen(
     navController: NavController,
-    viewModel: FilterViewModel
+    viewModel: FilterViewModel,
+    newsViewModel: NewsViewModel = viewModel()
 ) {
-    val newsItemsAll = NewsData.getAllNews()
+    val newsItemsAll = newsViewModel.newsItems
     var selectedCategory = viewModel.selectedCategory
     var selectedDateRange = viewModel.selectedDateRange
     val selectedUnwantedWords = viewModel.unwantedWords
-    val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     val newsItemsFilter = newsItemsAll.filter { newsItem ->
         val categoryMatch = selectedCategory == "Sve" || newsItem.category == selectedCategory
         val dateMatch = selectedDateRange?.let { (start, end) ->
@@ -51,6 +55,9 @@ fun NewsFeedScreen(
         Categories("Nauka/tehnologija", "filter_chip_sci"),
         Categories("Crna hronika", "filter_chip_none"),
     )
+    LaunchedEffect(selectedCategory) {
+        newsViewModel.loadTopStories(selectedCategory)
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -79,7 +86,7 @@ fun NewsFeedScreen(
         } else {
             key(selectedCategory) {
                 NewsList(newsList = newsItemsFilter, onItemClick = { news ->
-                    navController.navigate("details/${news.id}")
+                    navController.navigate("details/${news.uuid}")
                 })
             }
         }
