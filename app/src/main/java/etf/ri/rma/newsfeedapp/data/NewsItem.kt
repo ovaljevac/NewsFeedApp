@@ -14,5 +14,5 @@ data class NewsItem(
     val relevanceScore: Double?,
     val locale: String,
     val isFeatured: Boolean,
-
+    var imageTags: ArrayList<String> = arrayListOf()
 )

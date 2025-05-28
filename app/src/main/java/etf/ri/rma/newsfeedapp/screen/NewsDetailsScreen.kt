@@ -1,5 +1,6 @@
 package etf.ri.rma.newsfeedapp.screen
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -15,7 +16,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
@@ -29,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -38,8 +42,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import etf.ri.rma.newsfeedapp.R
+import etf.ri.rma.newsfeedapp.api.ImagaDAO
+import etf.ri.rma.newsfeedapp.api.RetrofitInstance
 import etf.ri.rma.newsfeedapp.data.NewsItem
+import etf.ri.rma.newsfeedapp.exceptions.InvalidImageURLException
 import etf.ri.rma.newsfeedapp.model.NewsViewModel
+import coil.compose.rememberAsyncImagePainter
+
 
 @Composable
 fun NewsDetailsScreen(
@@ -51,15 +60,27 @@ fun NewsDetailsScreen(
     BackHandler {
         onBack()
     }
+    val context = LocalContext.current
     LaunchedEffect(news.uuid) {
+        if (news.imageTags.isEmpty()) {
+            try {
+                val tags = ImagaDAO(RetrofitInstance.imagaApi).getTags(news.imageUrl)
+                news.imageTags.addAll(tags)
+            } catch (e: InvalidImageURLException) {
+                Toast.makeText(context, "Neispravan URL slike", Toast.LENGTH_SHORT).show()
+            }
+        }
         viewModel.loadSimilarStories(news.uuid)
     }
     var backButton by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
     Column (
-        modifier = Modifier.fillMaxHeight()
+        modifier = Modifier
+            .fillMaxHeight()
+            .verticalScroll(scrollState)
     ){
         Image(
-            painter = painterResource(id = R.drawable.default_banner),
+            painter = rememberAsyncImagePainter(news.imageUrl),
             contentDescription = "image",
             modifier = Modifier
                 .fillMaxWidth()
@@ -111,6 +132,15 @@ fun NewsDetailsScreen(
                 modifier = Modifier.testTag("details_date")
             )
         }
+        if (news.imageTags.isNotEmpty()) {
+            Text(
+                text = "Tagovi slike: ${news.imageTags.joinToString(", ")}",
+                modifier = Modifier
+                    .padding(5.dp)
+                    .testTag("details_image_tags"),
+                fontSize = 14.sp,
+            )
+        }
         Spacer(modifier = Modifier.weight(1f))
         Text(
             text = "KATEGORIJA: ${news.category} \nPOVEZANE VIJESTI IZ ISTE KATEGORIJE:",
@@ -130,7 +160,7 @@ fun NewsDetailsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ){
                     Image(
-                        painter = painterResource(id = R.drawable.default_img),
+                        painter = rememberAsyncImagePainter(related.imageUrl),
                         contentDescription = "image",
                         modifier = Modifier
                             .size(100.dp)

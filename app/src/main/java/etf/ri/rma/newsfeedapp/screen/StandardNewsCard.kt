@@ -20,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
 import etf.ri.rma.newsfeedapp.data.NewsItem
 
 
@@ -41,7 +42,7 @@ fun StandardNewsCard(
                 .padding(8.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.default_img),
+                painter = rememberAsyncImagePainter(news.imageUrl),
                 contentDescription = "image",
                 modifier = Modifier
                     .size(100.dp)

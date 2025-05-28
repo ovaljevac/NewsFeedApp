@@ -18,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
 import etf.ri.rma.newsfeedapp.data.NewsItem
 
 
@@ -34,7 +35,7 @@ fun FeaturedNewsCard(
     ){
         Column {
             Image(
-                painter = painterResource(id = R.drawable.default_banner),
+                painter = rememberAsyncImagePainter(news.imageUrl),
                 contentDescription = "image",
                 modifier = Modifier
                     .fillMaxWidth()
