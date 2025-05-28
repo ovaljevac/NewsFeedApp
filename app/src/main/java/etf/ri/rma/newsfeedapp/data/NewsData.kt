@@ -1,34 +1,186 @@
 package etf.ri.rma.newsfeedapp.data
 
-import etf.ri.rma.newsfeedapp.model.NewsItem
-import java.text.SimpleDateFormat
-import java.util.Locale
-
 object NewsData {
-    fun getAllNews(): List<NewsItem> {
-        val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-        return listOf(
-            NewsItem("1", "BiH i EU potpisale sporazum o digitalnoj tranziciji", "Sporazum podrazumijeva usvajanje EU standarda u oblasti digitalne uprave, sigurnosti podataka i unapređenja infrastrukture, što će otvoriti vrata za dodatna sredstva i IT projekte.", null, "Politika", true, "Klix.ba", "14-04-2025"),
-            NewsItem("2", "Zatvorena ulica kod Parlamenta zbog radova", "Privremena obustava saobraćaja planirana je do petka.", null, "Politika", false, "Avaz", "14-04-2025"),
-            NewsItem("3", "Zmajevi srušili Francusku u spektaklu u Sarajevu", "Nogometna reprezentacija BiH slavila je 3:2 na prepunom Koševu u kvalifikacijama za Evropsko prvenstvo, što im značajno povećava šanse za plasman.", null, "Sport", true, "Sportsport.ba", "13-04-2025"),
-            NewsItem("4", "Nova biciklistička staza u Tuzli", "Staza povezuje centar grada s univerzitetskim kampusom.", null, "Politika", false, "Tuzlanski.ba", "13-04-2025"),
-            NewsItem("5", "AI sistem domaćeg startupa koristi se u evropskim bolnicama", "Bosanskohercegovačka platforma za detekciju rizika kod pacijenata uvedena je u više klinika u Austriji i Sloveniji, a najavljena je i saradnja sa WHO.", null, "Nauka/tehnologija", true, "ETF Tech", "13-04-2025"),
-            NewsItem("6", "Isključenja vode u dijelu Ilidže", "Radovi planirani u ulici Hrasnička cesta.", null, "Politika", false, "Sarajevo.ba", "12-04-2025"),
-            NewsItem("7", "Košarkaši BiH pobijedili Srbiju u prijateljskom meču", "Rezultat 89:83 ohrabruje uoči narednih kvalifikacija.", null, "Sport", false, "Sport Centar", "12-04-2025"),
-            NewsItem("8", "Otvoren nacionalni centar za robotiku u Sarajevu", "Centar nudi edukaciju, istraživanja i pristup modernim industrijskim robotima, a otvoren je u saradnji sa više fakulteta i međunarodnih organizacija.", null, "Nauka/tehnologija", true, "Start.ba", "12-04-2025"),
-            NewsItem("9", "U ponedjeljak izmjene na linijama GRAS-a", "Nove trase se odnose na naselja Dobrinja i Mojmilo.", null, "Politika", false, "Radio Sarajevo", "12-04-2025"),
-            NewsItem("10", "Sarajevski tim razvio aplikaciju za simulaciju zemljotresa", "Nova aplikacija koristi 3D modeliranje kako bi simulirala uticaj zemljotresa na građevine i omogućila inženjerima bolju pripremu.", null, "Nauka/tehnologija", true, "Klix Tech", "11-04-2025"),
-            NewsItem("11", "Promjene termina sportskih škola zbog Ramazana", "Treninzi pomjereni u jutarnjim i večernjim terminima.", null, "Sport", false, "Sport.ba", "11-04-2025-"),
-            NewsItem("12", "BiH uvela digitalne lične karte sa QR kodom", "Ministarstvo unutrašnjih poslova predstavilo je nove digitalne dokumente koje građani mogu koristiti za identifikaciju i pristup e-servisima.", null, "Politika", true, "N1", "11-04-2025"),
-            NewsItem("13", "Održan maraton mladih inovatora u Mostaru", "Učestvovalo preko 60 srednjoškolaca iz cijele zemlje.", null, "Nauka/tehnologija", false, "Bljesak.info", "10-04-2025-"),
-            NewsItem("14", "Nogometaši Željezničara remizirali s Veležom", "Utakmica završena bez golova na stadionu Grbavica.", null, "Sport", false, "Sport Centar", "10-04-2025"),
-            NewsItem("15", "Bh. naučnik nagrađen za otkriće u kvantnoj fizici", "Dr. Haris Kovačević dobio je međunarodnu nagradu za rad u oblasti kvantnih komunikacija i sigurnosti podataka.", null, "Nauka/tehnologija", true, "ETF News", "10-04-2025"),
-            NewsItem("16", "Privremeno zatvorena ulica Ferhadija zbog manifestacije", "Zatvaranje na snazi u nedjelju od 10 do 16 sati.", null, "Politika", false, "Klix.ba", "10-04-2025"),
-            NewsItem("17", "BiH i Crna Gora dogovorile zajednički projekt prekogranične saradnje", "Projekt uključuje izgradnju zajedničkog inovacionog centra za digitalne tehnologije u Pljevljima i Goraždu.", null, "Politika", true, "Al Jazeera Balkans", "09-04-2025"),
-            NewsItem("18", "Reprezentacija BiH U-21 savladala Češku u Zenici", "Mladi Zmajevi pokazali solidnu igru i karakter.", null, "Sport", false, "N1 Sport", "09-04-2025"),
-            NewsItem("19", "Prva laboratorija za bioinžinjering otvorena na ETF-u", "Laboratorija omogućava simulaciju rada ljudskih ćelija i testiranje nano-materijala za medicinsku primjenu.", null, "Nauka/tehnologija", true, "ETF Lab", "09-04-2025"),
-            NewsItem("20", "Zatvoreni tuneli na putu prema Jablanici zbog odrona", "Saobraćaj preusmjeren preko Konjica dok se ne ukloni materijal.", null, "Politika", false, "Avaz", "08-04-2025")
-        ).sortedByDescending { formatter.parse(it.publishedDate)?.time }
-    }
-
+    val initialNews = listOf(
+        NewsItem(
+            uuid = "5fc60db3-a631-4076-8f1d-36f41472f3c6",
+            title = "There are two Gen Zs",
+            description = "The new political divide splitting young Americans in half.",
+            snippet = "is a senior politics reporter at Vox, where he covers the Democratic Party. He joined Vox in 2022 after reporting on national and international politics for the...",
+            url = "https://www.vox.com/politics/414266/republican-conservative-two-gen-z-young-voter-trumpier-progressive",
+            imageUrl = "https://platform.vox.com/wp-content/uploads/sites/2/2025/05/gettyimages-2158175237.jpg?quality=90&strip=all&crop=0%2C10.728733235956%2C100%2C78.542533528088&w=1200",
+            language = "en",
+            publishedDate = "27-05-2025",
+            source = "vox.com",
+            category = "politics",
+            relevanceScore = null,
+            locale = "us",
+            isFeatured = false
+        ),
+        NewsItem(
+            uuid = "e1a56e93-3f99-49df-be05-694b7fa937c4",
+            title = "Trump calls Harvard ‘very antisemitic,’ threatens to pull grants",
+            description = "President Donald Trump is threatening Harvard University with taking away $3 billion in grant money for medical and scientific research, calling the school “v...",
+            snippet = "President Donald Trump is threatening Harvard University with taking away $3 billion in grant money for medical and scientific research, calling the s...",
+            url = "https://www.today.com/video/harvard-responds-after-trump-threatens-to-pull-3b-in-federal-funds-240358981692",
+            imageUrl = "https://media-cldnry.s-nbcnews.com/image/upload/t_social_share_1200x630_center,f_auto,q_auto:best/mpx/2704722219/2025_05/1748344900947_tdy_news_7a_haake_trump_harvard_250527_1920x1080-2jq6oa.jpg",
+            language = "en",
+            publishedDate = "27-05-2025",
+            source = "nbcnews.com",
+            category = "politics",
+            relevanceScore = null,
+            locale = "us",
+            isFeatured = false
+        ),
+        NewsItem(
+            uuid = "68052e00-ffa9-4d03-b72a-a098ae6acbb5",
+            title = "Putin and Trump agree to prisoner exchange, Russia says",
+            description = "Russian foreign minister Sergei Lavrov told journalists Tuesday that President Donald Trump and Russian President Vladimir Putin have agreed to a prisoner swap.",
+            snippet = "Create your free profile or log in to save this article\n\nCreate your free profile or log in to save this article\n\nPresident Donald Trump and his Russian counter...",
+            url = "https://www.nbcnews.com/world/russia/putin-trump-agree-prisoner-exchange-russia-says-rcna209155",
+            imageUrl = "https://media-cldnry.s-nbcnews.com/image/upload/t_nbcnews-fp-1200-630,f_auto,q_auto:best/rockcms/2025-03/250317-putin-trump-16x9-mn-0900-ac94db.jpg",
+            language = "en",
+            publishedDate = "27-05-2025",
+            source = "nbcnews.com",
+            category = "politics",
+            relevanceScore = null,
+            locale = "us",
+            isFeatured = false
+        ),
+        NewsItem(
+            uuid = "e7655c9a-23fc-431c-b42d-88855a8c6850",
+            title = "Meth-crazed Florida man is bitten by alligator, charges at cops with garden shears before he’s shot dead in wild series of events",
+            description = "A drug-crazed Florida man ended up being fatally shot after he survived an alligator bite but then charged at cops with garden shears as they tried to help...",
+            snippet = "A meth-crazed Florida man survived getting bitten by an alligator — just to be fatally shot when he charged at cops trying to help him.\n\nThe wild scenes erupt...",
+            url = "https://nypost.com/2025/05/27/us-news/meth-crazed-florida-man-is-bitten-by-alligator-charges-at-cops-with-garden-shears-before-hes-shot-dead-in-wild-series-of-events/",
+            imageUrl = "https://nypost.com/wp-content/uploads/sites/2/2025/05/florida-man-drug-crazed-fatal-shooting-police-comp-2.jpg?quality=75&strip=all&w=1024",
+            language = "en",
+            publishedDate = "27-05-2025",
+            source = "nypost.com",
+            category = "general",
+            relevanceScore = null,
+            locale = "us",
+            isFeatured = false
+        ),
+        NewsItem(
+            uuid = "a67605f8-a3b7-4e99-95bc-fc07696d15a7",
+            title = "Fed Chair Jerome Powell says the biggest career mistake grads can make is avoiding risks",
+            description = "Jerome Powell said he once took the initiative to introduce himself to his boss, which laid the path to his eventual appointment as Federal Reserve Chairman.",
+            snippet = "U.S. Federal Reserve Chair Jerome Powell speaks during a press conference following a two-day meeting of the Federal Open Market Committee on interest rate poli...",
+            url = "https://www.cnbc.com/2025/05/27/fed-chair-jerome-powell-says-biggest-career-mistake-is-avoiding-risks.html",
+            imageUrl = "https://image.cnbcfm.com/api/v1/image/108142416-17466432622025-05-07t183743z_506828317_rc26deatcp2a_rtrmadp_0_usa-economy-fed.jpeg?v=1746643360&w=1920&h=1080",
+            language = "en",
+            publishedDate = "27-05-2025",
+            source = "cnbc.com",
+            category = "business",
+            relevanceScore = null,
+            locale = "us",
+            isFeatured = false
+        ),
+        NewsItem(
+            uuid = "2081504b-c5f6-4e6f-b0d2-99e06978f883",
+            title = "The return of the nuclear threat",
+            description = "India-Pakistan’s almost-war revealed something alarming about our political moment.",
+            snippet = "is a senior correspondent at Vox covering foreign policy and world news with a focus on the future of international conflict. He is the author of the 2018 book,...",
+            url = "https://www.vox.com/world-politics/414233/new-nuclear-age-india-pakistan-ukraine-russia-trump",
+            imageUrl = "https://platform.vox.com/wp-content/uploads/sites/2/2025/05/gettyimages-2214267472.jpg?quality=90&strip=all&crop=0%2C9.3941089484833%2C100%2C81.211782103033&w=1200",
+            language = "en",
+            publishedDate = "27-05-2025",
+            source = "vox.com",
+            category = "politics",
+            relevanceScore = null,
+            locale = "us",
+            isFeatured = false
+        ),
+        NewsItem(
+            uuid = "3c235726-b6de-4df9-8f85-4242f947f4c9",
+            title = "Olympic legend Mary Lou Retton arrested on DUI charge, records show",
+            description = "American Olympic gymnastics great Mary Lou Retton was hit with a DUI charge earlier this month in West Virginia, according to court records.",
+            snippet = "NEW You can now listen to Fox News articles!\n\nOlympic gymnastics legend Mary Lou Retton was arrested on a DUI charge in West Virginia earlier this month, court ...",
+            url = "https://www.foxnews.com/sports/olympic-legend-mary-lou-retton-arrested-dui-charge-records-show",
+            imageUrl = "https://static.foxnews.com/foxnews.com/content/uploads/2024/01/Mary-Lou-Retton3.jpg",
+            language = "en",
+            publishedDate = "27-05-2025",
+            source = "foxnews.com",
+            category = "politics",
+            relevanceScore = null,
+            locale = "us",
+            isFeatured = false
+        ),
+        NewsItem(
+            uuid = "c4df1ef7-862b-4d80-ba63-c0bc2dcb291b",
+            title = "Axios' Alex Thompson calls Donald Trump's health 'fair game' after being 'untransparent' about records",
+            description = "Axios' Alex Thompson said coverage on President Donald Trump's health is",
+            snippet = "\"Original Sin\" co-author and Axios reporter Alex Thompson told MSNBC on Sunday that there needs to be \"investigative reporting\" on President Donald Trump’s he...",
+            url = "https://www.foxnews.com/media/axios-alex-thompson-calls-donald-trumps-health-fair-game-after-being-untransparent-about-records",
+            imageUrl = "https://static.foxnews.com/foxnews.com/content/uploads/2024/03/Biden.-Trump.jpg",
+            language = "en",
+            publishedDate = "27-05-2025",
+            source = "foxnews.com",
+            category = "politics",
+            relevanceScore = null,
+            locale = "us",
+            isFeatured = false
+        ),
+        NewsItem(
+            uuid = "f0b187cd-727b-4c08-81eb-3d6cca05f1a0",
+            title = "Venezuelans with TPS fear deportations and dozens hurt in Liverpool parade crash: Morning Rundown",
+            description = "Venezuelans with TPS fear deportations after Supreme Court ruling. Liverpool parade car crash is not investigated as terrorism. Weight loss drug prices drop.",
+            snippet = "Venezuelans with temporary protected status fear being deported after Supreme Court ruling. Car crash at Liverpool parade is not being investigated as an act of...",
+            url = "https://www.nbcnews.com/news/us-news/venezuelans-deportations-liverpool-parade-crash-morning-rundown-rcna209139",
+            imageUrl = "https://media-cldnry.s-nbcnews.com/image/upload/t_nbcnews-fp-1200-630,f_auto,q_auto:best/rockcms/2025-05/250523-TPS-venezuelans-se-414p-c1d8f8.jpg",
+            language = "en",
+            publishedDate = "27-05-2025",
+            source = "nbcnews.com",
+            category = "politics",
+            relevanceScore = null,
+            locale = "us",
+            isFeatured = false
+        ),
+        NewsItem(
+            uuid = "bcba9224-aca0-45e3-a826-b794dbaa0a40",
+            title = "How Did Handmaid's Tale Series Finale Set Up Testaments Spinoff?",
+            description = "'The Handmaid's Tale' franchise is expanding with 'The Testaments,' which will feature Ann Dowd as Aunt Lydia",
+            snippet = "The Handmaid’s Tale is officially over — but its spinoff The Testaments is just beginning.\n\nDuring the Tuesday, May 27, conclusion to the hit Hulu series, J...",
+            url = "https://www.usmagazine.com/entertainment/news/how-did-handmaids-tale-series-finale-set-up-testaments-spinoff/",
+            imageUrl = "https://www.usmagazine.com/wp-content/uploads/2025/05/How-Did-The-Handmaids-Tale-Series-Finale-Set-Up1.jpg?crop=732px%2C39px%2C1368px%2C718px&resize=1200%2C630&quality=86&strip=all",
+            language = "en",
+            publishedDate = "27-05-2025",
+            source = "usmagazine.com",
+            category = "entertainment",
+            relevanceScore = null,
+            locale = "us",
+            isFeatured = false
+        ),
+        NewsItem(
+            uuid = "8042da7f-dd09-43d5-8680-cdd8c56c158e",
+            title = "Deli meat, cucumbers top list of 'really risky foods' you might have in the fridge",
+            description = "Consumer Reports, in a new study, lists deli meat, cucumbers and eggs among the top 10 riskiest foods due to increased recalls and bacterial outbreaks in 2024.",
+            snippet = "Cucumbers, deli meat and eggs are just a few of the everyday grocery items that made a list from Consumer Reports of \"10 Really Risky Foods Right Now.\"\n\nIt's ba...",
+            url = "https://www.foxnews.com/food-drink/deli-meat-cucumbers-top-list-risky-foods-you-might-have-fridge",
+            imageUrl = "https://static.foxnews.com/foxnews.com/content/uploads/2020/10/iStock-855898984.jpg",
+            language = "en",
+            publishedDate = "27-05-2025",
+            source = "foxnews.com",
+            category = "politics",
+            relevanceScore = null,
+            locale = "us",
+            isFeatured = false
+        ),
+        NewsItem(
+            uuid = "688841fb-7fcf-45f9-b87e-3eed62ffb40f",
+            title = "Dallas: pronóstico del tiempo para este martes 27 de mayo",
+            description = "Conoce cómo estará el tiempo en Dallas, Texas, para hoy martes 27 de mayo. Antes de salir de tu casa, descubre el pronóstico meteorológico y las condiciones...",
+            snippet = "Este martes 27 de mayo se espera que la temperatura en Dallas, Texas, logre un máximo de 82 grados Fahrenheit (28ºC). La probabilidad de lluvia será del 25% ...",
+            url = "https://laopinion.com/2025/05/27/dallas-pronostico-del-tiempo-para-este-martes-27-de-mayo/",
+            imageUrl = "https://laopinion.com/wp-content/uploads/sites/3/2025/05/dallaspronosticodeltiempoparaestemartes27demayo.png?w=1200",
+            language = "es",
+            publishedDate = "27-05-2025",
+            source = "laopinion.com",
+            category = "general",
+            relevanceScore = null,
+            locale = "us",
+            isFeatured = false
+        )
+    )
 }

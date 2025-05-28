@@ -21,6 +21,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,20 +36,24 @@ import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import etf.ri.rma.newsfeedapp.R
-import etf.ri.rma.newsfeedapp.model.NewsItem
-import etf.ri.rma.newsfeedapp.model.getRelatedNews
+import etf.ri.rma.newsfeedapp.data.NewsItem
+import etf.ri.rma.newsfeedapp.model.NewsViewModel
 
 @Composable
 fun NewsDetailsScreen(
     news: NewsItem,
     onBack: () -> Unit,
-    onNewsSelected: (NewsItem) -> Unit
+    onNewsSelected: (NewsItem) -> Unit,
+    viewModel: NewsViewModel = viewModel()
 ) {
     BackHandler {
         onBack()
     }
-    val relatedNews = getRelatedNews(news)
+    LaunchedEffect(news.uuid) {
+        viewModel.loadSimilarStories(news.uuid)
+    }
     var backButton by remember { mutableStateOf(false) }
     Column (
         modifier = Modifier.fillMaxHeight()
@@ -113,9 +118,8 @@ fun NewsDetailsScreen(
                 .padding(vertical = 4.dp, horizontal = 5.dp)
                 .testTag("details_category")
         )
-            Row(
-            ) {
-                relatedNews.forEachIndexed { index, related ->
+            Row {
+                viewModel.similarNewsItems.forEachIndexed { index, related ->
                 Column (
                     modifier = Modifier
                         .weight(0.5f)

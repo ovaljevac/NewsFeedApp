@@ -1,12 +1,17 @@
 package etf.ri.rma.newsfeedapp.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import etf.ri.rma.newsfeedapp.data.NewsData
 import etf.ri.rma.newsfeedapp.model.FilterViewModel
+import etf.ri.rma.newsfeedapp.model.NewsViewModel
 import etf.ri.rma.newsfeedapp.screen.FilterScreen
 import etf.ri.rma.newsfeedapp.screen.NewsDetailsScreen
 import etf.ri.rma.newsfeedapp.screen.NewsFeedScreen
@@ -15,14 +20,16 @@ import etf.ri.rma.newsfeedapp.screen.NewsFeedScreen
 fun NewsFeedAppNavHost(){
     val navController = rememberNavController()
     val filterViewModel: FilterViewModel = viewModel()
+    val sharedNewsViewModel: NewsViewModel = viewModel()
     NavHost(
         navController = navController,
-        startDestination = "newsFeed"
+        startDestination = "newsFeed",
     ) {
         composable("newsFeed") {
             NewsFeedScreen(
                 navController = navController,
-                viewModel = filterViewModel
+                viewModel = filterViewModel,
+                newsViewModel = sharedNewsViewModel
             )
         }
         composable("filter") {
@@ -42,19 +49,26 @@ fun NewsFeedAppNavHost(){
                 }
             )
         }
-        composable("details/{newsId}") { backStackEntry ->
-            val newsId = backStackEntry.arguments?.getString("newsId")
-            val news = NewsData.getAllNews().find {it.uuid == newsId}
-            news?.let {
+        composable("details/{uuid}") { backStackEntry ->
+            val uuid = backStackEntry.arguments?.getString("uuid") ?: ""
+            val newsItems = sharedNewsViewModel.newsItems
+            var news = newsItems.find {it.uuid == uuid}
+            if (news != null) {
                 NewsDetailsScreen(
-                    news = it,
-                    onBack = {
-                        navController.popBackStack("newsFeed", inclusive = false)
+                    news = news,
+                    onBack = { navController.popBackStack("newsFeed", inclusive = false) },
+                    onNewsSelected = { selectedNews ->
+                        navController.navigate("details/${selectedNews.uuid}")
                     },
-                    onNewsSelected = { related ->
-                        navController.navigate("details/${related.uuid}")
-                    }
+                    viewModel = sharedNewsViewModel
                 )
+            } else {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             }
         }
     }

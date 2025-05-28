@@ -14,7 +14,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import etf.ri.rma.newsfeedapp.data.NewsData
-import etf.ri.rma.newsfeedapp.model.NewsItem
+import etf.ri.rma.newsfeedapp.data.NewsItem
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
