@@ -40,6 +40,7 @@ fun StandardNewsCard(
         Row(
             modifier = Modifier
                 .padding(8.dp)
+                .clickable(onClick = onClick)
         ) {
             Image(
                 painter = rememberAsyncImagePainter(news.imageUrl),
@@ -49,10 +50,7 @@ fun StandardNewsCard(
                     .padding(end = 12.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Column (
-                modifier = Modifier
-                    .clickable(onClick = onClick)
-            ){
+            Column {
                 Text(
                     modifier = Modifier
                         .padding(8.dp),
