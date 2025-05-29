@@ -34,18 +34,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import etf.ri.rma.newsfeedapp.R
 import etf.ri.rma.newsfeedapp.api.ImagaDAO
 import etf.ri.rma.newsfeedapp.api.RetrofitInstance
 import etf.ri.rma.newsfeedapp.data.NewsItem
-import etf.ri.rma.newsfeedapp.exceptions.InvalidImageURLException
+import etf.ri.rma.newsfeedapp.data.network.exception.InvalidImageURLException
 import etf.ri.rma.newsfeedapp.model.NewsViewModel
 import coil.compose.rememberAsyncImagePainter
 
@@ -64,7 +62,7 @@ fun NewsDetailsScreen(
     LaunchedEffect(news.uuid) {
         if (news.imageTags.isEmpty()) {
             try {
-                val tags = ImagaDAO(RetrofitInstance.imagaApi).getTags(news.imageUrl)
+                val tags = ImagaDAO(RetrofitInstance.imagaApi).getImageTags(news.imageUrl)
                 news.imageTags.addAll(tags)
             } catch (e: InvalidImageURLException) {
                 Toast.makeText(context, "Neispravan URL slike", Toast.LENGTH_SHORT).show()

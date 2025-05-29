@@ -9,6 +9,6 @@ data class TagResult(
 )
 
 data class TagItem(
-    val tag: Map<String, String>,  // npr: { "en": "tree", "de": "Baum" }
+    val tag: Map<String, String>,
     val confidence: Double
 )

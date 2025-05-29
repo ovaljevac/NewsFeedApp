@@ -42,7 +42,7 @@ fun NewsItemDto.toNewsItem(): NewsItem {
         source = source,
         category = categories.firstOrNull { it != "general" } ?: categories.firstOrNull() ?: "general",
         relevanceScore = relevance_score,
-        locale = locale,
+        locale = locale ?: "us",
         isFeatured = false
     )
 }

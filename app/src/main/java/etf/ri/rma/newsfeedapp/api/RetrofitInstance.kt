@@ -25,7 +25,7 @@ object RetrofitInstance {
             }
             .build()
         Retrofit.Builder()
-            .baseUrl("https://api.imagga.com/v2/")
+            .baseUrl("https://api.imagga.com/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

@@ -5,8 +5,8 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface ImagaApiService {
-    @GET("tags")
+    @GET("v2/tags")
     suspend fun getImageTags(
-        @Query("image_url") imageUrl: String
+        @Query("image_url", encoded = true) imageUrl: String
     ) : ImagaResponse
 }

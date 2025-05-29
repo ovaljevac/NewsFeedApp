@@ -8,8 +8,15 @@ interface NewsApiService {
     @GET("v1/news/top")
     suspend fun getTopNewsByCategory(
         @Query("api_token") apiToken: String,
-        @Query("category") category: String,
+        @Query("categories") category: String,
         @Query("locale") locale: String = "us",
         @Query("limit") limit: Int = 3
     ) : NewsResponse
+
+    @GET("v1/news/similar")
+    suspend fun getSimilarNewsByUUID(
+        @Query("uuid") uuid: String,
+        @Query("api_token") token: String,
+        @Query("limit") limit: Int = 2
+    ): NewsResponse
 }

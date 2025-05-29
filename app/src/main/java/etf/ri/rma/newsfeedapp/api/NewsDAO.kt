@@ -3,7 +3,8 @@ package etf.ri.rma.newsfeedapp.api
 import etf.ri.rma.newsfeedapp.data.NewsData
 import etf.ri.rma.newsfeedapp.data.NewsItem
 import etf.ri.rma.newsfeedapp.data.toNewsItem
-import etf.ri.rma.newsfeedapp.exceptions.InvalidUUIDException
+import etf.ri.rma.newsfeedapp.data.network.exception.InvalidUUIDException
+import java.util.UUID
 
 class NewsDAO(
     private val api: NewsApiService,
@@ -13,6 +14,15 @@ class NewsDAO(
     private val allStories = mutableListOf<NewsItem>()
     private val newsByCategory = mutableMapOf<String, List<NewsItem>>()
     private val lastGetTime = mutableMapOf<String, Long>()
+
+    fun isValidUUID(uuid: String): Boolean {
+        return try {
+            UUID.fromString(uuid)
+            true
+        } catch (e: IllegalArgumentException) {
+            false
+        }
+    }
 
     suspend fun getTopStoriesByCategory(
         category: String,
@@ -55,15 +65,18 @@ class NewsDAO(
     }
 
     suspend fun getSimilarStories(uuid: String): List<NewsItem> {
-        val allNews = getAllStories()
-        val targetNews = allNews.find { it.uuid == uuid }
-            ?: throw InvalidUUIDException("Nepostojeći UUID: $uuid")
-        val targetCategory = targetNews.category
-        val similar = allNews
-            .filter { it.category == targetCategory && it.uuid != uuid }
-            .take(2)
-        return similar
+        if(!isValidUUID(uuid))
+            throw InvalidUUIDException("Nepostojeći UUID: $uuid")
+        return try {
+            val response = api.getSimilarNewsByUUID(uuid, apiToken)
+            val result = response.data.map { it.toNewsItem() }
+            result
+        } catch (e: Exception) {
+            e.printStackTrace()
+            throw InvalidUUIDException("Greška prilikom dohvata sličnih vijesti za UUID: $uuid")
+        }
     }
+
 
 
     fun getAllStories(): List<NewsItem> {

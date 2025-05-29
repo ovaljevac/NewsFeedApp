@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import etf.ri.rma.newsfeedapp.api.NewsDAO
 import etf.ri.rma.newsfeedapp.api.RetrofitInstance
 import etf.ri.rma.newsfeedapp.data.NewsItem
-import etf.ri.rma.newsfeedapp.exceptions.InvalidUUIDException
+import etf.ri.rma.newsfeedapp.data.network.exception.InvalidUUIDException
 import kotlinx.coroutines.launch
 
 class NewsViewModel : ViewModel() {
