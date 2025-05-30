@@ -14,6 +14,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
@@ -138,7 +139,7 @@ class TestS3 {
         server.shutdown()
     }
 
-    //@Test
+    @Test
     fun testIfCacheingWorks2() = runTest(timeout = 50.seconds) {
         val server = MockWebServer()
         server.useHttps(serverCertificate.sslSocketFactory(), false)
@@ -230,14 +231,14 @@ class TestS3 {
         val server = MockWebServer()
         server.useHttps(serverCertificate.sslSocketFactory(), false)
         server.start()
-        server.enqueue(MockResponse().setResponseCode(200).setBody(TestS3Data.getSimilar()))
+        server.enqueue(MockResponse().setResponseCode(200).setBody(TestS3Data.getTagsV1()))
         val imagga = TestS3PripremljenRetrofit().getImaggaDAOwithBaseURL(
             server.url("/").toString(),
             okHttpClient
         )
 
         val lista =
-            imagga.getImageTags("https://t3.ftcdn.net/jpg/02/97/07/18/360_F_297071826_W4Jv8lgKJ338d9grf68ocN3AaNjohkZ3.jpg")
+            imagga.getTags("https://t3.ftcdn.net/jpg/02/97/07/18/360_F_297071826_W4Jv8lgKJ338d9grf68ocN3AaNjohkZ3.jpg")
         val request = server.takeRequest(10, TimeUnit.SECONDS)
         assertTrue(request != null)
         assertTrue(
@@ -246,7 +247,7 @@ class TestS3 {
         )
         assertTrue(
             request.requestLine.contains(
-                "https://t3.ftcdn.net/jpg/02/97/07/18/360_F_297071826_W4Jv8lgKJ338d9grf68ocN3AaNjohkZ3.jpg",
+                URLEncoder.encode("https://t3.ftcdn.net/jpg/02/97/07/18/360_F_297071826_W4Jv8lgKJ338d9grf68ocN3AaNjohkZ3.jpg","UTF-8"),
                 ignoreCase = true
             ), message = "URL treba sadrzavati url slike"
         )
@@ -256,19 +257,18 @@ class TestS3 {
         )
         server.shutdown()
     }
-
     @Test
     fun testImaggaFailed() = runTest {
         val server = MockWebServer()
         server.useHttps(serverCertificate.sslSocketFactory(), false)
         server.start()
-        server.enqueue(MockResponse().setResponseCode(200).setBody(TestS3Data.getSimilar()))
+        server.enqueue(MockResponse().setResponseCode(200).setBody(TestS3Data.getTagsV1()))
         val imagga = TestS3PripremljenRetrofit().getImaggaDAOwithBaseURL(
             server.url("/").toString(),
             okHttpClient
         )
         assertFailsWith<InvalidImageURLException> {
-            val lista = imagga.getImageTags("url:url////url/url")
+            val lista = imagga.getTags("url:url////url/url")
         }
         assertTrue(
             server.requestCount == 0,

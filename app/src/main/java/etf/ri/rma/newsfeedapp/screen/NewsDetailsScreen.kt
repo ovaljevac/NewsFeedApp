@@ -62,7 +62,7 @@ fun NewsDetailsScreen(
     LaunchedEffect(news.uuid) {
         if (news.imageTags.isEmpty()) {
             try {
-                val tags = ImagaDAO(RetrofitInstance.imagaApi).getImageTags(news.imageUrl)
+                val tags = ImagaDAO(RetrofitInstance.imagaApi).getTags(news.imageUrl)
                 news.imageTags.addAll(tags)
             } catch (e: InvalidImageURLException) {
                 Toast.makeText(context, "Neispravan URL slike", Toast.LENGTH_SHORT).show()
