@@ -70,6 +70,18 @@ fun NewsDetailsScreen(
         }
         viewModel.loadSimilarStories(news.uuid)
     }
+    val categoryMap = mapOf(
+        "politics" to "Politika",
+        "sports" to "Sport",
+        "science" to "Nauka",
+        "tech" to "Tehnologija",
+        "business" to "Biznis",
+        "health" to "Zdravlje",
+        "entertainment" to "Zabava",
+        "food" to "Hrana",
+        "travel" to "Putovanje"
+    )
+    val translatedCategory = categoryMap[news.category] ?: news.category
     var backButton by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
     Column (
@@ -141,7 +153,7 @@ fun NewsDetailsScreen(
         }
         Spacer(modifier = Modifier.weight(1f))
         Text(
-            text = "KATEGORIJA: ${news.category} \nPOVEZANE VIJESTI IZ ISTE KATEGORIJE:",
+            text = "KATEGORIJA: ${translatedCategory} \nPOVEZANE VIJESTI IZ ISTE KATEGORIJE:",
             modifier = Modifier
                 .padding(vertical = 4.dp, horizontal = 5.dp)
                 .testTag("details_category")
