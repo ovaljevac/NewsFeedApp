@@ -48,6 +48,10 @@ class NewsViewModel : ViewModel() {
                 val result = dao.getSimilarStories(uuid)
                 similarNewsItems.clear()
                 similarNewsItems.addAll(result)
+                val newUniqueItems = result.filter { newItem ->
+                    newsItems.none { it.uuid == newItem.uuid }
+                }
+                newsItems.addAll(newUniqueItems)
             } catch (e: InvalidUUIDException) {
                 println("Greška: ${e.message}")
                 similarNewsItems.clear()

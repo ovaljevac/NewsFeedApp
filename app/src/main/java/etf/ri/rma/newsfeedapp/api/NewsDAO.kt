@@ -39,24 +39,23 @@ class NewsDAO(
             return try {
                 val response = api.getTopNewsByCategory(apiToken, category, locale, limit)
                 val newItemsRaw = response.data.map { it.toNewsItem() }
-                val featured = mutableListOf<NewsItem>()
-                val remaining = existingNews.toMutableList()
-                for (item in newItemsRaw) {
-                    val existing = remaining.find { it.uuid == item.uuid }
+                val featured = newItemsRaw.map { newItem ->
+                    val existing = existingNews.find { it.uuid == newItem.uuid }
                     if (existing != null) {
-                        remaining.remove(existing)
-                        featured.add(existing.copy(isFeatured = true))
+                        existing.copy(isFeatured = true)
                     } else {
-                        val newFeatured = item.copy(isFeatured = true)
+                        val newFeatured = newItem.copy(isFeatured = true)
                         allStories.add(newFeatured)
-                        featured.add(newFeatured)
+                        newFeatured
                     }
                 }
-                val standard = remaining.map { it.copy(isFeatured = false) }
+                val standard = existingNews
+                    .filter { oldItem -> newItemsRaw.none { it.uuid == oldItem.uuid } }
+                    .map { it.copy(isFeatured = false) }
                 val finalList = featured + standard
                 newsByCategory[category] = finalList.toMutableList()
                 lastGetTime[category] = currentTime
-                return finalList
+                finalList
             } catch (e: Exception) {
                 e.printStackTrace()
                 emptyList()
@@ -70,6 +69,10 @@ class NewsDAO(
         return try {
             val response = api.getSimilarNewsByUUID(uuid, apiToken)
             val result = response.data.map { it.toNewsItem() }
+            val newUniqueItems = result.filter { newItem ->
+                allStories.none { it.uuid == newItem.uuid }
+            }
+            allStories.addAll(newUniqueItems)
             result
         } catch (e: Exception) {
             e.printStackTrace()
