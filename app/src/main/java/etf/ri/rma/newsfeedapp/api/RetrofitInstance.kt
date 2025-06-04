@@ -15,7 +15,7 @@ object RetrofitInstance {
             .create(NewsApiService::class.java)
     }
     val imagaApi: ImagaApiService by lazy {
-        val credentials = Credentials.basic("acc_1cff041f9b57936", "64d7ca5c7b1343b6f560ac6b7f29bce0")
+        val credentials = Credentials.basic("acc_73760dce3c61722", "2635b671a1a78b08dca6bf76706b5c71")
         val client = OkHttpClient.Builder()
             .addInterceptor { chain ->
                 val request = chain.request().newBuilder()

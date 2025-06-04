@@ -24,40 +24,13 @@ fun NewsFeedScreen(
     viewModel: FilterViewModel,
     newsViewModel: NewsViewModel = viewModel()
 ) {
-
-    val categories = listOf(
-        Categories("Više filtera ...", "filter_chip_more"),
-        Categories("Sve", "filter_chip_all"),
-        Categories("Politika", "filter_chip_pol"),
-        Categories("Sport", "filter_chip_spo"),
-        Categories("Nauka", "filter_chip_sci"),
-        Categories("Tehnologija", "filter_chip_tech"),
-        Categories("Crna hronika", "filter_chip_none"),
-        Categories("Biznis", "filter_chip_bus"),
-        Categories("Zdravlje", "filter_chip_hea"),
-        Categories("Zabava", "filter_chip_ent"),
-        Categories("Hrana", "filter_chip_food"),
-        Categories("Putovanje", "filter_chip_tra")
-    )
-
-    val categoryMap = mapOf(
-        "Politika" to "politics",
-        "Sport" to "sports",
-        "Nauka" to "science",
-        "Tehnologija" to "tech",
-        "Biznis" to "business",
-        "Zdravlje" to "health",
-        "Zabava" to "entertainment",
-        "Hrana" to "food",
-        "Putovanje" to "travel"
-    )
     val newsItemsAll = newsViewModel.newsItems
     var selectedCategory = viewModel.selectedCategory
     var selectedDateRange = viewModel.selectedDateRange
     val selectedUnwantedWords = viewModel.unwantedWords
     val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
     val newsItemsFilter = newsItemsAll.filter { newsItem ->
-        val apiCategory = categoryMap[selectedCategory]
+        val apiCategory = viewModel.categoryMap[selectedCategory]
         val categoryMatch = selectedCategory == "Sve" || newsItem.category == apiCategory
         val dateMatch = selectedDateRange?.let { (start, end) ->
             val itemDate = formatter.parse(newsItem.publishedDate)?.time
@@ -74,7 +47,7 @@ fun NewsFeedScreen(
             "Sve" -> newsViewModel.loadAllStories()
             "Više filtera ..." -> {}
             else -> {
-                categoryMap[viewModel.selectedCategory]?.let { apiCategory ->
+                viewModel.categoryMap[viewModel.selectedCategory]?.let { apiCategory ->
                     newsViewModel.loadTopStoriesByCategory(apiCategory)
                 }
             }
@@ -88,7 +61,7 @@ fun NewsFeedScreen(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            items(categories) { category ->
+            items(viewModel.categories) { category ->
                 FilterChipCustom(
                     category = category,
                     selected = selectedCategory,

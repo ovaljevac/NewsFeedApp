@@ -36,10 +36,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import etf.ri.rma.newsfeedapp.customcomposables.DateRangePickerModal
 import etf.ri.rma.newsfeedapp.customcomposables.FilterChipCustom
 import etf.ri.rma.newsfeedapp.customcomposables.UnwantedWordsList
 import etf.ri.rma.newsfeedapp.model.Categories
+import etf.ri.rma.newsfeedapp.model.NewsViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -52,18 +54,12 @@ fun FilterScreen(
     initialUnwantedWords: List<String>,
     onBack: () -> Unit,
     onApplyFilters: (category: String, dateRange: Pair<Long?, Long?>?, unwantedWords: List<String>) -> Unit,
-
+    categories: List<Categories>,
+    viewModel: NewsViewModel = viewModel()
 ){
     BackHandler {
         onBack()
     }
-    val categories = listOf(
-        Categories("Sve", "filter_chip_all"),
-        Categories("Politika", "filter_chip_pol"),
-        Categories("Sport", "filter_chip_spo"),
-        Categories("Nauka/tehnologija", "filter_chip_sci"),
-        Categories("Crna hronika", "filter_chip_none"),
-    )
     var selectedCategory by remember { mutableStateOf(initialCategory) }
     var selectedDate by remember { mutableStateOf(initialDateRange) }
     val unwantedList = remember { mutableStateListOf<String>().apply { addAll(initialUnwantedWords) } }
@@ -98,7 +94,10 @@ fun FilterScreen(
                 FilterChipCustom(
                     category = category,
                     selected = selectedCategory,
-                    onSelected = { selectedCategory = it },
+                    onSelected = {
+                        selectedCategory = it
+                        viewModel.loadTopStoriesPreview(it)
+                                 },
                     modifier = Modifier
                         .height(50.dp)
                         .width(110.dp)
@@ -280,6 +279,7 @@ fun FilterScreen(
                     .weight(0.5f)
                     .testTag("filter_apply_button"),
                 onClick = {
+                    viewModel.applyFilters()
                     onApplyFilters(selectedCategory, selectedDate, unwantedList.toList())
                 }
             ) {

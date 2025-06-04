@@ -14,6 +14,8 @@ class NewsViewModel : ViewModel() {
     val newsItems = mutableStateListOf<NewsItem>()
     val similarNewsItems = mutableStateListOf<NewsItem>()
     private val lastLoadTime = mutableMapOf<String, Long>()
+    val tempNewsItems = mutableListOf<NewsItem>()
+
 
     fun loadAllStories() : List<NewsItem> {
         newsItems.clear()
@@ -21,6 +23,34 @@ class NewsViewModel : ViewModel() {
         newsItems.addAll(result)
         return newsItems
     }
+
+
+    fun loadTopStoriesPreview(category: String, locale: String = "us", limit: Int = 3) {
+        val now = System.currentTimeMillis()
+        val lastTime = lastLoadTime[category] ?: 0L
+        val timeSinceLast = now - lastTime
+        if (timeSinceLast < 30_000L) {
+            return
+        }
+        viewModelScope.launch {
+            try {
+                val result = dao.getTopStoriesByCategory(category, locale, limit)
+                tempNewsItems.clear()
+                tempNewsItems.addAll(result)
+                lastLoadTime[category] = now
+            } catch (e: Exception) {
+                e.printStackTrace()
+                tempNewsItems.clear()
+            }
+        }
+    }
+
+    fun applyFilters() {
+        newsItems.clear()
+        newsItems.addAll(tempNewsItems)
+        tempNewsItems.clear()
+    }
+
 
     fun loadTopStoriesByCategory(category: String, locale: String = "us", limit: Int = 3) {
         val now = System.currentTimeMillis()

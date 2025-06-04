@@ -46,7 +46,8 @@ fun NewsFeedAppNavHost(){
                 },
                 onBack = {
                     navController.popBackStack("newsFeed", inclusive = false)
-                }
+                },
+                categories = filterViewModel.categories
             )
         }
         composable("details/{uuid}") { backStackEntry ->

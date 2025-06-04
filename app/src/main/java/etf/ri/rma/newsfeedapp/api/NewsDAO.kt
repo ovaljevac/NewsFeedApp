@@ -70,7 +70,12 @@ class NewsDAO(
             val response = api.getSimilarNewsByUUID(uuid, apiToken)
             val result = response.data.map { it.toNewsItem() }
             val newUniqueItems = result.filter { newItem ->
-                allStories.none { it.uuid == newItem.uuid }
+                allStories.none { it.uuid == newItem.uuid}
+            }
+            newUniqueItems.forEach { item ->
+                val categoryList = newsByCategory[item.category]?.toMutableList() ?: mutableListOf()
+                categoryList.add(item)
+                newsByCategory[item.category] = categoryList
             }
             allStories.addAll(newUniqueItems)
             result
