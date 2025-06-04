@@ -1,6 +1,5 @@
 package etf.ri.rma.newsfeedapp.screen
 
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -21,7 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,7 +31,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
@@ -58,14 +56,13 @@ fun NewsDetailsScreen(
     BackHandler {
         onBack()
     }
-    val context = LocalContext.current
     LaunchedEffect(news.uuid) {
         if (news.imageTags.isEmpty()) {
             try {
                 val tags = ImagaDAO(RetrofitInstance.imagaApi).getTags(news.imageUrl)
                 news.imageTags.addAll(tags)
             } catch (e: InvalidImageURLException) {
-                Toast.makeText(context, "Neispravan URL slike", Toast.LENGTH_SHORT).show()
+                e.printStackTrace()
             }
         }
         viewModel.loadSimilarStories(news.uuid)
@@ -106,10 +103,10 @@ fun NewsDetailsScreen(
                 .padding(5.dp)
                 .testTag("details_title")
         )
-        Divider(
-            thickness = 1.dp,
+        HorizontalDivider(
             modifier = Modifier
                 .padding(horizontal = 5.dp, vertical = 5.dp),
+            thickness = 2.dp,
             color = Color.Black
         )
         Text(
@@ -120,10 +117,10 @@ fun NewsDetailsScreen(
                 .padding(5.dp)
                 .testTag("details_snippet")
         )
-        Divider(
-            thickness = 1.dp,
+        HorizontalDivider(
             modifier = Modifier
                 .padding(horizontal = 5.dp, vertical = 5.dp),
+            thickness = 2.dp,
             color = Color.Black
         )
         Row (
@@ -153,7 +150,7 @@ fun NewsDetailsScreen(
         }
         Spacer(modifier = Modifier.weight(1f))
         Text(
-            text = "KATEGORIJA: ${translatedCategory} \nPOVEZANE VIJESTI IZ ISTE KATEGORIJE:",
+            text = "KATEGORIJA: $translatedCategory \nPOVEZANE VIJESTI IZ ISTE KATEGORIJE:",
             modifier = Modifier
                 .padding(vertical = 4.dp, horizontal = 5.dp)
                 .testTag("details_category")

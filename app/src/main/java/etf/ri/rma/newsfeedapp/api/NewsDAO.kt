@@ -20,6 +20,7 @@ class NewsDAO(
             UUID.fromString(uuid)
             true
         } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
             false
         }
     }

@@ -19,8 +19,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -88,7 +88,6 @@ fun FilterScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 3.dp, horizontal = 5.dp)
-            //    .border(2.dp, Color.Black, RoundedCornerShape(6.dp))
         ) {
             categories.forEach { category ->
                 FilterChipCustom(
@@ -105,11 +104,10 @@ fun FilterScreen(
                 )
             }
         }
-        Divider(
-            thickness = 1.dp,
+        HorizontalDivider(
             modifier = Modifier
-                .padding(horizontal = 3.dp, vertical = 5.dp)
-            ,
+                .padding(horizontal = 3.dp, vertical = 5.dp),
+            thickness = 2.dp,
             color = Color.Black
         )
         Text(
@@ -143,11 +141,10 @@ fun FilterScreen(
                 Spacer(modifier = Modifier.weight(1f))
             }
         }
-        Divider(
-            thickness = 1.dp,
+        HorizontalDivider(
             modifier = Modifier
-                .padding(horizontal = 3.dp, vertical = 5.dp)
-            ,
+                .padding(horizontal = 3.dp, vertical = 5.dp),
+            thickness = 2.dp,
             color = Color.Black
         )
         Text(
@@ -175,11 +172,10 @@ fun FilterScreen(
                 onDismiss = { showModal = false }
             )
         }
-        Divider(
-            thickness = 1.dp,
+        HorizontalDivider(
             modifier = Modifier
-                .padding(horizontal = 3.dp, vertical = 5.dp)
-            ,
+                .padding(horizontal = 3.dp, vertical = 5.dp),
+            thickness = 2.dp,
             color = Color.Black
         )
         Text(

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import etf.ri.rma.newsfeedapp.ui.theme.NewsFeedAppTheme
 import etf.ri.rma.newsfeedapp.navigation.NewsFeedAppNavHost
 
@@ -19,7 +18,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        window.statusBarColor = Color(0xFFD2B48C).toArgb()
         setContent {
             NewsFeedAppTheme {
                 Surface(

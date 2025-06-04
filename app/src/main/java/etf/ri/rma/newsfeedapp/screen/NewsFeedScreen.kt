@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import etf.ri.rma.newsfeedapp.customcomposables.FilterChipCustom
-import etf.ri.rma.newsfeedapp.model.Categories
 import etf.ri.rma.newsfeedapp.model.FilterViewModel
 import etf.ri.rma.newsfeedapp.model.NewsViewModel
 import java.text.SimpleDateFormat
