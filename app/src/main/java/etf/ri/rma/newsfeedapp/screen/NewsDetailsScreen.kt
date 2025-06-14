@@ -57,16 +57,10 @@ fun NewsDetailsScreen(
         onBack()
     }
     LaunchedEffect(news.uuid) {
-        if (news.imageTags.isEmpty()) {
-            try {
-                val tags = ImagaDAO(RetrofitInstance.imagaApi).getTags(news.imageUrl)
-                news.imageTags.addAll(tags)
-            } catch (e: InvalidImageURLException) {
-                e.printStackTrace()
-            }
-        }
+        viewModel.loadImageTags(news)
         viewModel.loadSimilarStories(news.uuid)
     }
+
     val categoryMap = mapOf(
         "politics" to "Politika",
         "sports" to "Sport",
