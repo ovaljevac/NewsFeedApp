@@ -152,7 +152,7 @@ class NewsViewModel (application: Application) : AndroidViewModel(application) {
 
     fun loadImageTags(news: NewsItem) {
         viewModelScope.launch {
-            if (news.imageTags.isNotEmpty()) return@launch
+            if (news.tags.isNotEmpty()) return@launch
 
             val newsId = withContext(Dispatchers.IO) {
                 localDao.getIdByUuid(news.uuid)

@@ -130,9 +130,9 @@ fun NewsDetailsScreen(
                 modifier = Modifier.testTag("details_date")
             )
         }
-        if (news.imageTags.isNotEmpty()) {
+        if (news.tags.isNotEmpty()) {
             Text(
-                text = "Tagovi slike: ${news.imageTags.joinToString(", ")}",
+                text = "Tagovi slike: ${news.tags.joinToString(", ")}",
                 modifier = Modifier
                     .padding(5.dp)
                     .testTag("details_image_tags"),
