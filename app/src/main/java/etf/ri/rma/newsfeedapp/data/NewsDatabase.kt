@@ -1,10 +1,12 @@
-package etf.ri.rma.newsfeedapp.database
+package etf.ri.rma.newsfeedapp.data
 
-import SavedNewsDAO
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import etf.ri.rma.newsfeedapp.model.News.NewsEntity
+import etf.ri.rma.newsfeedapp.model.News.NewsTagsCrossRef
+import etf.ri.rma.newsfeedapp.model.News.TagEntity
 
 @Database(
     entities = [NewsEntity::class, TagEntity::class, NewsTagsCrossRef::class],
@@ -13,7 +15,7 @@ import androidx.room.RoomDatabase
 )
 abstract class NewsDatabase : RoomDatabase() {
 
-    abstract fun newsDao(): SavedNewsDAO
+    abstract fun savedNewsDAO(): SavedNewsDAO
 
     companion object {
         @Volatile
@@ -22,10 +24,10 @@ abstract class NewsDatabase : RoomDatabase() {
         fun getInstance(context: Context): NewsDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    NewsDatabase::class.java,
-                    DATABASE_NAME
-                ).fallbackToDestructiveMigration()
+                                context.applicationContext,
+                                NewsDatabase::class.java,
+                                DATABASE_NAME
+                            ).fallbackToDestructiveMigration(false)
                     .build()
                 INSTANCE = instance
                 instance

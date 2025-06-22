@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
-import etf.ri.rma.newsfeedapp.data.NewsItem
+import etf.ri.rma.newsfeedapp.model.NewsItem
 
 
 

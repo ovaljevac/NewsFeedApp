@@ -1,7 +1,7 @@
 package etf.ri.rma.newsfeedapp.api
 
 import etf.ri.rma.newsfeedapp.data.NewsData
-import etf.ri.rma.newsfeedapp.data.NewsItem
+import etf.ri.rma.newsfeedapp.model.NewsItem
 import etf.ri.rma.newsfeedapp.data.toNewsItem
 import etf.ri.rma.newsfeedapp.data.network.exception.InvalidUUIDException
 import java.util.UUID

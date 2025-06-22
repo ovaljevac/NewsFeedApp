@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import etf.ri.rma.newsfeedapp.data.NewsItem
+import etf.ri.rma.newsfeedapp.model.NewsItem
 
 @Composable
 fun NewsList(
@@ -23,7 +23,7 @@ fun NewsList(
             .padding(horizontal = 1.dp)
             .testTag("news_list")
     ) {
-        items(newsList){ news ->
+        items(newsList.sortedByDescending { it.publishedDate }){ news ->
             if(news.isFeatured){
                 FeaturedNewsCard(news = news, onClick = {onItemClick(news)})
             }

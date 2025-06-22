@@ -38,10 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import etf.ri.rma.newsfeedapp.api.ImagaDAO
-import etf.ri.rma.newsfeedapp.api.RetrofitInstance
-import etf.ri.rma.newsfeedapp.data.NewsItem
-import etf.ri.rma.newsfeedapp.data.network.exception.InvalidImageURLException
+import etf.ri.rma.newsfeedapp.model.NewsItem
 import etf.ri.rma.newsfeedapp.model.NewsViewModel
 import coil.compose.rememberAsyncImagePainter
 

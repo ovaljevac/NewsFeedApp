@@ -1,5 +1,7 @@
 package etf.ri.rma.newsfeedapp.data
 
+import etf.ri.rma.newsfeedapp.model.NewsItem
+
 object NewsData {
     val initialNews = listOf(
         NewsItem(

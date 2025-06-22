@@ -1,13 +1,14 @@
+package etf.ri.rma.newsfeedapp.data
+
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import etf.ri.rma.newsfeedapp.data.NewsItem
-import etf.ri.rma.newsfeedapp.data.NewsWithTags
-import etf.ri.rma.newsfeedapp.database.NewsEntity
-import etf.ri.rma.newsfeedapp.database.NewsTagsCrossRef
-import etf.ri.rma.newsfeedapp.database.TagEntity
+import etf.ri.rma.newsfeedapp.model.News.NewsEntity
+import etf.ri.rma.newsfeedapp.model.News.NewsTagsCrossRef
+import etf.ri.rma.newsfeedapp.model.News.TagEntity
+import etf.ri.rma.newsfeedapp.model.NewsItem
 import kotlin.collections.distinctBy
 import kotlin.collections.map
 
@@ -31,7 +32,7 @@ interface SavedNewsDAO {
             category = news.category,
             relevanceScore = news.relevanceScore,
             locale = news.locale,
-            isFeatured = news.isFeatured
+            isFeatured = news.isFeatured,
         )
         insertNews(newsEntity)
         return true
@@ -68,6 +69,9 @@ interface SavedNewsDAO {
     """)
     suspend fun getTags(newsId: Int): List<String>
 
+    @Query("SELECT value FROM Tags")
+    suspend fun getAllTags(): List<String>
+
     @Transaction
     suspend fun getSimilarNews(tags: List<String>): List<NewsItem> {
         val tagIds = getTagIdsByValues(tags)
@@ -93,7 +97,8 @@ interface SavedNewsDAO {
             relevanceScore = news.relevanceScore,
             locale = news.locale,
             isFeatured = news.isFeatured,
-            imageTags = ArrayList(tags.map { it.value })
+            tags = ArrayList(this@toNewsItem.tags.map { it.value }),
+            imageTags = this@toNewsItem.tags
         )
     }
 
