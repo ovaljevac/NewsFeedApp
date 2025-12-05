@@ -1,5 +1,7 @@
 package etf.ri.rma.newsfeedapp.screen
 
+import android.content.Intent
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -31,10 +33,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -108,6 +112,24 @@ fun NewsDetailsScreen(
                 .padding(5.dp)
                 .testTag("details_snippet")
         )
+        Text (
+            text = "Pročitaj više: ",
+            modifier = Modifier
+                .padding(horizontal = 5.dp),
+            fontWeight = Bold
+        )
+        val context = LocalContext.current
+        Text(
+            text = news.url,
+            color = Color.Blue,
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier
+                .padding(5.dp)
+                .clickable {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(news.url))
+                    context.startActivity(intent)
+                }
+        )
         HorizontalDivider(
             modifier = Modifier
                 .padding(horizontal = 5.dp, vertical = 5.dp),
@@ -130,7 +152,7 @@ fun NewsDetailsScreen(
                 modifier = Modifier.testTag("details_date")
             )
         }
-        if (news.tags.isNotEmpty()) {
+        /*if (news.tags.isNotEmpty()) {
             Text(
                 text = "Tagovi slike: ${news.tags.joinToString(", ")}",
                 modifier = Modifier
@@ -138,13 +160,15 @@ fun NewsDetailsScreen(
                     .testTag("details_image_tags"),
                 fontSize = 14.sp,
             )
-        }
+        }*/
+
         Spacer(modifier = Modifier.weight(1f))
         Text(
             text = "KATEGORIJA: $translatedCategory \nPOVEZANE VIJESTI IZ ISTE KATEGORIJE:",
             modifier = Modifier
                 .padding(vertical = 4.dp, horizontal = 5.dp)
-                .testTag("details_category")
+                .testTag("details_category"),
+            fontWeight = Bold
         )
             Row {
                 viewModel.similarNewsItems.forEachIndexed { index, related ->
