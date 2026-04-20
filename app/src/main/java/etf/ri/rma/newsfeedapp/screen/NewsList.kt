@@ -1,6 +1,7 @@
 package etf.ri.rma.newsfeedapp.screen
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -16,24 +17,23 @@ import etf.ri.rma.newsfeedapp.data.NewsItem
 @Composable
 fun NewsList(
     newsList: List<NewsItem>,
-    onItemClick: (NewsItem) -> Unit
-){
+    onItemClick: (NewsItem) -> Unit,
+    modifier: Modifier = Modifier
+) {
     LazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
-            .testTag("news_list")
-        ,
+            .testTag("news_list"),
+        contentPadding = PaddingValues(bottom = 18.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(newsList){ news ->
-            if(news.isFeatured){
-                FeaturedNewsCard(news = news, onClick = {onItemClick(news)})
+        items(newsList) { news ->
+            if (news.isFeatured) {
+                FeaturedNewsCard(news = news, onClick = { onItemClick(news) })
+            } else {
+                StandardNewsCard(news = news, onClick = { onItemClick(news) })
             }
-            else {
-                StandardNewsCard(news = news, onClick = {onItemClick(news)})
-            }
-
         }
         item {
             Spacer(modifier = Modifier.height(12.dp))

@@ -40,8 +40,18 @@ class NewsViewModel (application: Application) : AndroidViewModel(application) {
 
     fun loadAllStories() {
         viewModelScope.launch {
-            val result = withContext(Dispatchers.IO) {
-                localDao.allNews()
+            val result = if (isConnected()) {
+                val remote = withContext(Dispatchers.IO) {
+                    dao.refreshTopStories()
+                }
+                remote.forEach { item ->
+                    withContext(Dispatchers.IO) { localDao.saveNews(item) }
+                }
+                remote
+            } else {
+                withContext(Dispatchers.IO) {
+                    localDao.allNews().ifEmpty { dao.getAllStories() }
+                }
             }
             newsItems.clear()
             newsItems.addAll(result)

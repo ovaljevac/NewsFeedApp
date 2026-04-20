@@ -48,8 +48,8 @@ class TestS4 {
 
 
     companion object {
-        var news1 = NewsItem(uuid=UUID.randomUUID().toString(), title = "Naslova T0", snippet = "snpt", category = "politics", imageUrl = "", isFeatured = true, publishedDate = "01-01-2025", source = "izvor")
-        var news2 = NewsItem(uuid=UUID.randomUUID().toString(), title = "Naslova 2", snippet = "snpt 2", category = "sport", imageUrl = "", isFeatured = false, publishedDate = "01-02-2025", source = "izvor 2")
+        var news1 = NewsItem(uuid =UUID.randomUUID().toString(), title = "Naslova T0", snippet = "snpt", category = "politics", imageUrl = "", isFeatured = true, publishedDate = "01-01-2025", source = "izvor")
+        var news2 = NewsItem(uuid =UUID.randomUUID().toString(), title = "Naslova 2", snippet = "snpt 2", category = "sport", imageUrl = "", isFeatured = false, publishedDate = "01-02-2025", source = "izvor 2")
         lateinit var roomDb: NewsDatabase
         lateinit var savedNewsDAO: SavedNewsDAO
         lateinit var db: SupportSQLiteDatabase

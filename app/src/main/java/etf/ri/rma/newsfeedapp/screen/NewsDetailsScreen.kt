@@ -5,40 +5,49 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AssistChip
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
+import etf.ri.rma.newsfeedapp.R
 import etf.ri.rma.newsfeedapp.data.NewsItem
 import etf.ri.rma.newsfeedapp.model.NewsViewModel
 
@@ -49,126 +58,197 @@ fun NewsDetailsScreen(
     onNewsSelected: (NewsItem) -> Unit,
     viewModel: NewsViewModel = viewModel()
 ) {
-    BackHandler {
-        onBack()
-    }
+    BackHandler { onBack() }
+
     LaunchedEffect(news.uuid) {
         viewModel.loadImageTags(news)
         viewModel.loadSimilarStories(news.uuid)
     }
 
-    val categoryMap = mapOf(
-        "politics" to "Politika",
-        "sports" to "Sport",
-        "science" to "Nauka",
-        "tech" to "Tehnologija",
-        "business" to "Biznis",
-        "health" to "Zdravlje",
-        "entertainment" to "Zabava",
-        "food" to "Hrana",
-        "travel" to "Putovanje"
-    )
-    val translatedCategory = categoryMap[news.category] ?: news.category
     val scrollState = rememberScrollState()
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxHeight()
             .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(scrollState)
-            .padding(16.dp)
     ) {
-        Image(
-            painter = rememberAsyncImagePainter(news.imageUrl),
-            contentDescription = news.title,
-            contentScale = ContentScale.Crop,
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(230.dp)
-                .clip(RoundedCornerShape(8.dp))
-        )
-        Spacer(modifier = Modifier.height(18.dp))
-        Text(
-            text = news.title,
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.testTag("details_title")
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            AssistChip(
-                onClick = {},
-                label = { Text(translatedCategory) },
-                modifier = Modifier.testTag("details_category")
-            )
-            Text(
-                text = "${news.source} • ${news.publishedDate}",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .testTag("details_source")
-            )
-            Text(
-                text = news.publishedDate,
-                modifier = Modifier.testTag("details_date")
-            )
-        }
-        HorizontalDivider(
-            modifier = Modifier.padding(vertical = 16.dp),
-            color = MaterialTheme.colorScheme.outline
-        )
-        Text(
-            text = news.snippet,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.testTag("details_snippet")
-        )
-
-        if (news.imageTags.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(18.dp))
-            Text(
-                text = "Tagovi slike",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = news.imageTags.joinToString(", "),
-                modifier = Modifier
-                    .padding(top = 4.dp)
-                    .testTag("details_image_tags"),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.tertiary
-            )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-        Text(
-            text = "Povezane vijesti",
-            style = MaterialTheme.typography.titleMedium
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            viewModel.similarNewsItems.forEachIndexed { index, related ->
-                RelatedNewsCard(
-                    news = related,
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(bottom = 88.dp)
+        ) {
+            Box {
+                Image(
+                    painter = rememberAsyncImagePainter(news.imageUrl.takeIf { it.isNotBlank() } ?: R.drawable.default_banner),
+                    contentDescription = news.title,
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .weight(1f)
-                        .testTag("related_news_title_${index + 1}"),
-                    onClick = { onNewsSelected(related) }
+                        .fillMaxWidth()
+                        .height(330.dp)
                 )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RoundIconButton(Icons.Filled.ArrowBack, "Back", onBack)
+                    Spacer(modifier = Modifier.weight(1f))
+                    RoundIconButton(Icons.Filled.Favorite, "Save", {})
+                    Spacer(modifier = Modifier.size(10.dp))
+                    RoundIconButton(Icons.Filled.Share, "Share", {})
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(horizontal = 20.dp, vertical = 22.dp)
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(6.dp),
+                    color = MaterialTheme.colorScheme.primary
+                ) {
+                    Text(
+                        text = readableCategory(news.category).uppercase(),
+                        modifier = Modifier
+                            .padding(horizontal = 10.dp, vertical = 5.dp)
+                            .testTag("details_category"),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = news.title,
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.testTag("details_title")
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Surface(
+                        modifier = Modifier.size(42.dp),
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Favorite,
+                            contentDescription = null,
+                            modifier = Modifier.padding(10.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Column(modifier = Modifier.padding(start = 10.dp)) {
+                        Text(
+                            text = news.source,
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.testTag("details_source")
+                        )
+                        Text(
+                            text = "${news.publishedDate}  -  4 min read",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.testTag("details_date")
+                        )
+                    }
+                }
+
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 18.dp),
+                    color = MaterialTheme.colorScheme.outline
+                )
+
+                Text(
+                    text = news.description.ifBlank { news.snippet },
+                    style = MaterialTheme.typography.bodyLarge.copy(fontFamily = FontFamily.Serif),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.testTag("details_snippet")
+                )
+
+                if (news.imageTags.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(18.dp))
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
+                    ) {
+                        Column(modifier = Modifier.padding(14.dp)) {
+                            Text(
+                                text = "Key Takeaways",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = news.imageTags.joinToString(", "),
+                                modifier = Modifier
+                                    .padding(top = 5.dp)
+                                    .testTag("details_image_tags"),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.tertiary
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(22.dp))
+                Text(
+                    text = "Povezane vijesti",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    viewModel.similarNewsItems.take(2).forEachIndexed { index, related ->
+                        RelatedNewsCard(
+                            news = related,
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("related_news_title_${index + 1}"),
+                            onClick = { onNewsSelected(related) }
+                        )
+                    }
+                }
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
         Button(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp)
-                .padding(WindowInsets.navigationBars.asPaddingValues())
+                .align(Alignment.BottomEnd)
+                .navigationBarsPadding()
+                .padding(20.dp)
+                .height(56.dp)
                 .testTag("details_close_button"),
-            shape = RoundedCornerShape(8.dp),
+            shape = CircleShape,
             onClick = onBack
         ) {
             Text("Nazad")
+        }
+    }
+}
+
+@Composable
+private fun RoundIconButton(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    contentDescription: String,
+    onClick: () -> Unit
+) {
+    Surface(
+        modifier = Modifier.size(46.dp),
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.94f),
+        shadowElevation = 5.dp
+    ) {
+        IconButton(onClick = onClick) {
+            Icon(
+                imageVector = icon,
+                contentDescription = contentDescription,
+                tint = MaterialTheme.colorScheme.onSurface
+            )
         }
     }
 }
@@ -181,19 +261,19 @@ private fun RelatedNewsCard(
 ) {
     Card(
         modifier = modifier.clickable(onClick = onClick),
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(14.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
             Image(
-                painter = rememberAsyncImagePainter(news.imageUrl),
+                painter = rememberAsyncImagePainter(news.imageUrl.takeIf { it.isNotBlank() } ?: R.drawable.default_img),
                 contentDescription = news.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(92.dp)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(10.dp))
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
