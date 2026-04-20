@@ -2,19 +2,19 @@ package etf.ri.rma.newsfeedapp.customcomposables
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import etf.ri.rma.newsfeedapp.model.Categories
-
 
 @Composable
 fun FilterChipCustom(
@@ -24,9 +24,10 @@ fun FilterChipCustom(
     onSelected: (String) -> Unit,
     filterScreen: () -> Unit = {},
 ) {
+    val isSelected = selected == category.cat
     FilterChip(
         modifier = modifier
-            .padding(3.dp)
+            .padding(horizontal = 4.dp, vertical = 6.dp)
             .testTag(category.tag),
         onClick = {
             onSelected(category.cat)
@@ -37,25 +38,34 @@ fun FilterChipCustom(
         label = {
             Text(category.cat)
         },
-        selected = selected == category.cat,
-        leadingIcon = if (selected == category.cat) {
+        selected = isSelected,
+        shape = RoundedCornerShape(8.dp),
+        border = FilterChipDefaults.filterChipBorder(
+            enabled = true,
+            selected = isSelected,
+            borderColor = MaterialTheme.colorScheme.outline,
+            selectedBorderColor = MaterialTheme.colorScheme.primary,
+            borderWidth = 1.dp,
+            selectedBorderWidth = 1.dp
+        ),
+        leadingIcon = if (isSelected) {
             {
                 Icon(
                     imageVector = Icons.Filled.Done,
-                    contentDescription = "Done icon",
+                    contentDescription = "Selected",
                     modifier = Modifier.size(FilterChipDefaults.IconSize)
                 )
             }
-
         } else {
             null
-        }, colors = FilterChipDefaults.filterChipColors(
-            containerColor = Color(0xFF3A3A3A),
-            selectedContainerColor = Color(0xFF6C4F3D),
-            labelColor = Color.White,
-            selectedLabelColor = Color.White,
-            iconColor = Color.White,
-            selectedLeadingIconColor = Color.White
+        },
+        colors = FilterChipDefaults.filterChipColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            selectedContainerColor = MaterialTheme.colorScheme.primary,
+            labelColor = MaterialTheme.colorScheme.onSurface,
+            selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+            iconColor = MaterialTheme.colorScheme.onPrimary,
+            selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimary
         )
     )
 }

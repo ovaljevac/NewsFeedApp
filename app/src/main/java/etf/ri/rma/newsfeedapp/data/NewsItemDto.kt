@@ -1,6 +1,5 @@
 package etf.ri.rma.newsfeedapp.data
 
-import etf.ri.rma.newsfeedapp.model.NewsItem
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -41,8 +40,7 @@ fun NewsItemDto.toNewsItem(): NewsItem {
         language = language,
         publishedDate = formattedDate,
         source = source,
-        category = categories.firstOrNull { it != "general" } ?: categories.firstOrNull()
-        ?: "general",
+        category = categories.firstOrNull { it != "general" } ?: categories.firstOrNull() ?: "general",
         relevanceScore = relevance_score,
         locale = locale ?: "us",
         isFeatured = false

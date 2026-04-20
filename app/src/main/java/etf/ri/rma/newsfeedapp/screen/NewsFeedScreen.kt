@@ -1,14 +1,22 @@
 package etf.ri.rma.newsfeedapp.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import etf.ri.rma.newsfeedapp.customcomposables.FilterChipCustom
@@ -24,8 +32,8 @@ fun NewsFeedScreen(
     newsViewModel: NewsViewModel = viewModel()
 ) {
     val newsItemsAll = newsViewModel.newsItems
-    var selectedCategory = viewModel.selectedCategory
-    var selectedDateRange = viewModel.selectedDateRange
+    val selectedCategory = viewModel.selectedCategory
+    val selectedDateRange = viewModel.selectedDateRange
     val selectedUnwantedWords = viewModel.unwantedWords
     val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
     val newsItemsFilter = newsItemsAll.filter { newsItem ->
@@ -41,6 +49,7 @@ fun NewsFeedScreen(
         }
         categoryMatch && dateMatch && unwantedMatch
     }
+
     LaunchedEffect(viewModel.selectedCategory) {
         when (viewModel.selectedCategory) {
             "Sve" -> newsViewModel.loadAllStories()
@@ -52,29 +61,49 @@ fun NewsFeedScreen(
             }
         }
     }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        LazyRow(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(start = 16.dp, top = 18.dp, end = 16.dp, bottom = 6.dp)
+        ) {
+            Text(
+                text = "NewsFeed",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Text(
+                text = "$selectedCategory • ${newsItemsFilter.size} vijesti",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.tertiary
+            )
+        }
+
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(horizontal = 12.dp)
         ) {
             items(viewModel.categories) { category ->
                 FilterChipCustom(
                     category = category,
                     selected = selectedCategory,
                     onSelected = {
-                        if (it == "Više filtera ...") {
-                            navController.navigate("filter")
-                        } else {
+                        if (it != "Više filtera ...") {
                             viewModel.selectedCategory = it
                         }
-                                 },
+                    },
                     filterScreen = { navController.navigate("filter") }
                 )
             }
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         if (newsItemsFilter.isEmpty() && selectedCategory != "Više filtera ...") {
             MessageCard("Nema pronađenih vijesti u kategoriji $selectedCategory")
         } else {

@@ -1,5 +1,6 @@
 package etf.ri.rma.newsfeedapp.screen
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -10,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import etf.ri.rma.newsfeedapp.model.NewsItem
+import etf.ri.rma.newsfeedapp.data.NewsItem
 
 @Composable
 fun NewsList(
@@ -20,18 +21,22 @@ fun NewsList(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 1.dp)
+            .padding(horizontal = 16.dp)
             .testTag("news_list")
+        ,
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(newsList.sortedByDescending { it.publishedDate }){ news ->
+        items(newsList){ news ->
             if(news.isFeatured){
                 FeaturedNewsCard(news = news, onClick = {onItemClick(news)})
             }
             else {
                 StandardNewsCard(news = news, onClick = {onItemClick(news)})
             }
-            Spacer(modifier = Modifier.height(5.dp))
 
+        }
+        item {
+            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }

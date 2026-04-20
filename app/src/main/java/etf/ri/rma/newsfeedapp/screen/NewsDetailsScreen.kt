@@ -1,11 +1,10 @@
 package etf.ri.rma.newsfeedapp.screen
 
-import android.content.Intent
-import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,32 +19,28 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.font.FontWeight.Companion.Bold
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import etf.ri.rma.newsfeedapp.model.NewsItem
-import etf.ri.rma.newsfeedapp.model.NewsViewModel
 import coil.compose.rememberAsyncImagePainter
-
+import etf.ri.rma.newsfeedapp.data.NewsItem
+import etf.ri.rma.newsfeedapp.model.NewsViewModel
 
 @Composable
 fun NewsDetailsScreen(
@@ -74,152 +69,140 @@ fun NewsDetailsScreen(
         "travel" to "Putovanje"
     )
     val translatedCategory = categoryMap[news.category] ?: news.category
-    var backButton by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
-    Column (
+
+    Column(
         modifier = Modifier
             .fillMaxHeight()
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollState)
-    ){
+            .padding(16.dp)
+    ) {
         Image(
             painter = rememberAsyncImagePainter(news.imageUrl),
-            contentDescription = "image",
+            contentDescription = news.title,
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(180.dp)
-                .padding(5.dp)
+                .height(230.dp)
+                .clip(RoundedCornerShape(8.dp))
         )
+        Spacer(modifier = Modifier.height(18.dp))
         Text(
             text = news.title,
-            fontWeight = Bold,
-            fontSize = 25.sp,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .padding(5.dp)
-                .testTag("details_title")
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.testTag("details_title")
         )
-        HorizontalDivider(
-            modifier = Modifier
-                .padding(horizontal = 5.dp, vertical = 5.dp),
-            thickness = 2.dp,
-            color = Color.Black
-        )
-        Text(
-            text = news.snippet,
-            fontSize = 19.sp,
-            textAlign = TextAlign.Left,
-            modifier = Modifier
-                .padding(5.dp)
-                .testTag("details_snippet")
-        )
-        Text (
-            text = "Pročitaj više: ",
-            modifier = Modifier
-                .padding(horizontal = 5.dp),
-            fontWeight = Bold
-        )
-        val context = LocalContext.current
-        Text(
-            text = news.url,
-            color = Color.Blue,
-            textDecoration = TextDecoration.Underline,
-            modifier = Modifier
-                .padding(5.dp)
-                .clickable {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(news.url))
-                    context.startActivity(intent)
-                }
-        )
-        HorizontalDivider(
-            modifier = Modifier
-                .padding(horizontal = 5.dp, vertical = 5.dp),
-            thickness = 2.dp,
-            color = Color.Black
-        )
-        Row (
-            modifier = Modifier
-                .padding(5.dp)
-        ){
-            Text(
-                text = news.source,
-                modifier = Modifier.testTag("details_source")
+        Spacer(modifier = Modifier.height(10.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            AssistChip(
+                onClick = {},
+                label = { Text(translatedCategory) },
+                modifier = Modifier.testTag("details_category")
             )
             Text(
-                text = " • ",
+                text = "${news.source} • ${news.publishedDate}",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .testTag("details_source")
             )
             Text(
                 text = news.publishedDate,
                 modifier = Modifier.testTag("details_date")
             )
         }
-        /*if (news.tags.isNotEmpty()) {
-            Text(
-                text = "Tagovi slike: ${news.tags.joinToString(", ")}",
-                modifier = Modifier
-                    .padding(5.dp)
-                    .testTag("details_image_tags"),
-                fontSize = 14.sp,
-            )
-        }*/
-
-        Spacer(modifier = Modifier.weight(1f))
-        Text(
-            text = "KATEGORIJA: $translatedCategory \nPOVEZANE VIJESTI IZ ISTE KATEGORIJE:",
-            modifier = Modifier
-                .padding(vertical = 4.dp, horizontal = 5.dp)
-                .testTag("details_category"),
-            fontWeight = Bold
+        HorizontalDivider(
+            modifier = Modifier.padding(vertical = 16.dp),
+            color = MaterialTheme.colorScheme.outline
         )
-            Row {
-                viewModel.similarNewsItems.forEachIndexed { index, related ->
-                Column (
-                    modifier = Modifier
-                        .weight(0.5f)
-                        .clickable { onNewsSelected(related) }
-                        .padding(5.dp)
-                        .testTag("related_news_title_${index + 1}")
-                        .border(2.dp, Color.Black, shape = RoundedCornerShape(8.dp)),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ){
-                    Image(
-                        painter = rememberAsyncImagePainter(related.imageUrl),
-                        contentDescription = "image",
-                        modifier = Modifier
-                            .size(100.dp)
-                            .padding(end = 12.dp)
-                    )
-                        Text(
-                            text = related.title,
-                            modifier = Modifier
-                                .padding(vertical = 4.dp, horizontal =5.dp) ,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
-            }
-        Row(
-            verticalAlignment = Alignment.Bottom,
-            modifier = Modifier.padding(WindowInsets.navigationBars.asPaddingValues())
+        Text(
+            text = news.snippet,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.testTag("details_snippet")
+        )
 
-        ){
-            Button(
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF3A3A3A),
-                    contentColor = Color.White
-                ),
-                shape = RoundedCornerShape(6.dp),
+        if (news.imageTags.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(18.dp))
+            Text(
+                text = "Tagovi slike",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = news.imageTags.joinToString(", "),
                 modifier = Modifier
-                    .padding(vertical = 3.dp, horizontal = 5.dp)
-                    .height(53.dp)
-                    .weight(0.5f)
-                    .testTag("details_close_button"),
-                onClick = {
-                    backButton = !backButton
-                    onBack()
-                }
-            ) {
-                Text("Nazad")
+                    .padding(top = 4.dp)
+                    .testTag("details_image_tags"),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.tertiary
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+        Text(
+            text = "Povezane vijesti",
+            style = MaterialTheme.typography.titleMedium
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            viewModel.similarNewsItems.forEachIndexed { index, related ->
+                RelatedNewsCard(
+                    news = related,
+                    modifier = Modifier
+                        .weight(1f)
+                        .testTag("related_news_title_${index + 1}"),
+                    onClick = { onNewsSelected(related) }
+                )
             }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp)
+                .padding(WindowInsets.navigationBars.asPaddingValues())
+                .testTag("details_close_button"),
+            shape = RoundedCornerShape(8.dp),
+            onClick = onBack
+        ) {
+            Text("Nazad")
+        }
+    }
+}
+
+@Composable
+private fun RelatedNewsCard(
+    news: NewsItem,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = modifier.clickable(onClick = onClick),
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(modifier = Modifier.padding(8.dp)) {
+            Image(
+                painter = rememberAsyncImagePainter(news.imageUrl),
+                contentDescription = news.title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(92.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = news.title,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold
+            )
         }
     }
 }

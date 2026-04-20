@@ -1,6 +1,6 @@
 package etf.ri.rma.newsfeedapp.model
 
-import etf.ri.rma.newsfeedapp.data.SavedNewsDAO
+import SavedNewsDAO
 import android.Manifest
 import android.app.Application
 import android.content.Context
@@ -9,13 +9,14 @@ import android.net.NetworkCapabilities
 import androidx.annotation.RequiresPermission
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import etf.ri.rma.newsfeedapp.api.ImagaDAO
 import etf.ri.rma.newsfeedapp.api.NewsDAO
 import etf.ri.rma.newsfeedapp.api.RetrofitInstance
-import etf.ri.rma.newsfeedapp.model.NewsItem
+import etf.ri.rma.newsfeedapp.data.NewsItem
 import etf.ri.rma.newsfeedapp.data.network.exception.InvalidUUIDException
-import etf.ri.rma.newsfeedapp.data.NewsDatabase
+import etf.ri.rma.newsfeedapp.database.NewsDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -26,7 +27,7 @@ class NewsViewModel (application: Application) : AndroidViewModel(application) {
     val similarNewsItems = mutableStateListOf<NewsItem>()
     private val lastLoadTime = mutableMapOf<String, Long>()
     val tempNewsItems = mutableListOf<NewsItem>()
-    private val localDao: SavedNewsDAO = NewsDatabase.getInstance(application).savedNewsDAO()
+    private val localDao: SavedNewsDAO = NewsDatabase.getInstance(application).newsDao()
 
     @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
     private fun isConnected(): Boolean {
@@ -94,7 +95,7 @@ class NewsViewModel (application: Application) : AndroidViewModel(application) {
                     for (item in result) {
                         if (item.imageTags.isNotEmpty()) {
                             withContext(Dispatchers.IO) {
-                                localDao.addTags(item.tags, localDao.getIdByUuid(item.uuid) ?: return@withContext)
+                                localDao.addTags(item.imageTags, localDao.getIdByUuid(item.uuid) ?: return@withContext)
                             }
                         }
                     }
@@ -152,7 +153,7 @@ class NewsViewModel (application: Application) : AndroidViewModel(application) {
 
     fun loadImageTags(news: NewsItem) {
         viewModelScope.launch {
-            if (news.tags.isNotEmpty()) return@launch
+            if (news.imageTags.isNotEmpty()) return@launch
 
             val newsId = withContext(Dispatchers.IO) {
                 localDao.getIdByUuid(news.uuid)
@@ -163,7 +164,7 @@ class NewsViewModel (application: Application) : AndroidViewModel(application) {
                     localDao.getTags(newsId)
                 }
                 if (savedTags.isNotEmpty()) {
-                    news.tags.addAll(savedTags)
+                    news.imageTags.addAll(savedTags)
                     return@launch
                 }
             }
@@ -171,7 +172,7 @@ class NewsViewModel (application: Application) : AndroidViewModel(application) {
             if (isConnected()) {
                 try {
                     val tags = ImagaDAO(RetrofitInstance.imagaApi).getTags(news.imageUrl)
-                    news.tags.addAll(tags)
+                    news.imageTags.addAll(tags)
 
                     if (newsId != null) {
                         withContext(Dispatchers.IO) {

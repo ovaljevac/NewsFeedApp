@@ -47,9 +47,7 @@ fun DateRangePickerModal(
         DateRangePicker(
             state = dateRangePickerState,
             title = {
-                Text(
-                    text = "Izaberite opseg datuma"
-                )
+                Text(text = "Izaberite opseg datuma")
             },
             showModeToggle = false,
             modifier = Modifier
