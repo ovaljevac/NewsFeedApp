@@ -1,5 +1,7 @@
 package etf.ri.rma.newsfeedapp.model
 
+import etf.ri.rma.newsfeedapp.database.TagEntity
+
 data class NewsItem(
     val uuid: String = "",
     val title: String = "",
@@ -15,5 +17,5 @@ data class NewsItem(
     val locale: String = "",
     val isFeatured: Boolean = false,
     var tags: ArrayList<String> = arrayListOf(),
-    val imageTags: List<News.TagEntity> = emptyList()
+    val imageTags: List<TagEntity> = emptyList()
 )

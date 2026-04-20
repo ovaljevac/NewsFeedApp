@@ -1,8 +1,10 @@
 package etf.ri.rma.newsfeedapp.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,11 +13,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -36,81 +44,105 @@ fun NewsFeedScreen(
     val selectedDateRange = viewModel.selectedDateRange
     val selectedUnwantedWords = viewModel.unwantedWords
     val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+    val apiCategory = viewModel.categoryMap[selectedCategory]
+
     val newsItemsFilter = newsItemsAll.filter { newsItem ->
-        val apiCategory = viewModel.categoryMap[selectedCategory]
         val categoryMatch = selectedCategory == "Sve" || newsItem.category == apiCategory
         val dateMatch = selectedDateRange?.let { (start, end) ->
-            val itemDate = formatter.parse(newsItem.publishedDate)?.time
+            val itemDate = runCatching { formatter.parse(newsItem.publishedDate)?.time }.getOrNull()
             itemDate != null && itemDate in (start ?: Long.MIN_VALUE)..(end ?: Long.MAX_VALUE)
         } != false
         val unwantedMatch = selectedUnwantedWords.none { unwantedWord ->
             newsItem.title.contains(unwantedWord, ignoreCase = true) ||
-                    newsItem.snippet.contains(unwantedWord, ignoreCase = true)
+                newsItem.snippet.contains(unwantedWord, ignoreCase = true)
         }
         categoryMatch && dateMatch && unwantedMatch
     }
 
-    LaunchedEffect(viewModel.selectedCategory) {
-        when (viewModel.selectedCategory) {
+    LaunchedEffect(selectedCategory) {
+        when (selectedCategory) {
             "Sve" -> newsViewModel.loadAllStories()
-            "Više filtera ..." -> {}
-            else -> {
-                viewModel.categoryMap[viewModel.selectedCategory]?.let { apiCategory ->
-                    newsViewModel.loadTopStoriesByCategory(apiCategory)
-                }
-            }
+            "Vise filtera ..." -> Unit
+            else -> apiCategory?.let { newsViewModel.loadTopStoriesByCategory(it) }
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        bottomBar = {
+            NewsBottomBar(
+                active = "home",
+                onHome = {},
+                onExplore = { navController.navigate("filter") }
+            )
+        }
+    ) { innerPadding ->
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, top = 18.dp, end = 16.dp, bottom = 6.dp)
+                .fillMaxSize()
+                .padding(innerPadding)
+                .background(MaterialTheme.colorScheme.background)
         ) {
-            Text(
-                text = "NewsFeed",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Text(
-                text = "$selectedCategory • ${newsItemsFilter.size} vijesti",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.tertiary
-            )
-        }
-
-        LazyRow(
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 12.dp)
-        ) {
-            items(viewModel.categories) { category ->
-                FilterChipCustom(
-                    category = category,
-                    selected = selectedCategory,
-                    onSelected = {
-                        if (it != "Više filtera ...") {
-                            viewModel.selectedCategory = it
-                        }
-                    },
-                    filterScreen = { navController.navigate("filter") }
-                )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, top = 18.dp, end = 20.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                                append("News")
+                            }
+                            append(" Flash")
+                        },
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        text = "Good morning",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                }
+                SearchCircleButton()
             }
-        }
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
-        if (newsItemsFilter.isEmpty() && selectedCategory != "Više filtera ...") {
-            MessageCard("Nema pronađenih vijesti u kategoriji $selectedCategory")
-        } else {
-            key(selectedCategory) {
-                NewsList(newsList = newsItemsFilter, onItemClick = { news ->
-                    navController.navigate("details/${news.uuid}")
-                })
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                items(viewModel.categories) { category ->
+                    FilterChipCustom(
+                        category = category,
+                        selected = selectedCategory,
+                        onSelected = {
+                            if (it != "Vise filtera ...") {
+                                viewModel.selectedCategory = it
+                            }
+                        },
+                        filterScreen = { navController.navigate("filter") }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (newsItemsFilter.isEmpty() && selectedCategory != "Vise filtera ...") {
+                MessageCard("Nema pronadjenih vijesti u kategoriji $selectedCategory")
+            } else {
+                key(selectedCategory) {
+                    NewsList(
+                        newsList = newsItemsFilter,
+                        onItemClick = { news -> navController.navigate("details/${news.uuid}") },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
         }
     }

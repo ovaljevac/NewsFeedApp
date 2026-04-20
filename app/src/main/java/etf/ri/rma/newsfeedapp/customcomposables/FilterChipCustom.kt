@@ -27,19 +27,17 @@ fun FilterChipCustom(
     val isSelected = selected == category.cat
     FilterChip(
         modifier = modifier
-            .padding(horizontal = 4.dp, vertical = 6.dp)
+            .padding(horizontal = 4.dp, vertical = 5.dp)
             .testTag(category.tag),
         onClick = {
             onSelected(category.cat)
-            if (category.cat == "Više filtera ...") {
+            if (category.cat == "Vise filtera ...") {
                 filterScreen()
             }
         },
-        label = {
-            Text(category.cat)
-        },
+        label = { Text(category.cat) },
         selected = isSelected,
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(18.dp),
         border = FilterChipDefaults.filterChipBorder(
             enabled = true,
             selected = isSelected,
