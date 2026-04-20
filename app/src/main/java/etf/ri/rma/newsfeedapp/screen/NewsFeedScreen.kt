@@ -93,16 +93,16 @@ fun NewsFeedScreen(
                     Text(
                         text = buildAnnotatedString {
                             withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                                append("Nova")
+                                append("News")
                             }
-                            append(" News")
+                            append(" Flash")
                         },
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground
                     )
                     Text(
-                        text = "Good morning, Alex",
+                        text = "Good morning",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.tertiary
                     )
