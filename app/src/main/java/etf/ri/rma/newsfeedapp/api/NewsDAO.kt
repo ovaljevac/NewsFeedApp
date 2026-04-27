@@ -83,7 +83,7 @@ class NewsDAO(
 
     suspend fun getSimilarStories(uuid: String): List<NewsItem> {
         if (!isValidUUID(uuid)) {
-            throw InvalidUUIDException("Nepostojeci UUID: $uuid")
+            throw InvalidUUIDException("Invalid UUID: $uuid")
         }
 
         return try {
@@ -93,7 +93,7 @@ class NewsDAO(
             result
         } catch (e: Exception) {
             e.printStackTrace()
-            throw InvalidUUIDException("Greska prilikom dohvata slicnih vijesti za UUID: $uuid")
+            throw InvalidUUIDException("Error while fetching similar news for UUID: $uuid")
         }
     }
 

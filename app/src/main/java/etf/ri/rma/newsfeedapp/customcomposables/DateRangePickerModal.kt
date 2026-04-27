@@ -40,14 +40,14 @@ fun DateRangePickerModal(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Poništi")
+                Text("Cancel")
             }
         }
     ) {
         DateRangePicker(
             state = dateRangePickerState,
             title = {
-                Text(text = "Izaberite opseg datuma")
+                Text(text = "Select date range")
             },
             showModeToggle = false,
             modifier = Modifier

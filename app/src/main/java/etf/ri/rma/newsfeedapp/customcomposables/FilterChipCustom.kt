@@ -31,7 +31,7 @@ fun FilterChipCustom(
             .testTag(category.tag),
         onClick = {
             onSelected(category.cat)
-            if (category.cat == "Vise filtera ...") {
+            if (category.cat == "More filters ...") {
                 filterScreen()
             }
         },

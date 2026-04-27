@@ -30,7 +30,7 @@ fun UnwantedWordsList(
     ) {
         if (unwantedWordsList.isEmpty()) {
             Text(
-                text = "Nema unesenih riječi.",
+                text = "No words added.",
                 modifier = Modifier.padding(14.dp),
                 color = MaterialTheme.colorScheme.tertiary
             )

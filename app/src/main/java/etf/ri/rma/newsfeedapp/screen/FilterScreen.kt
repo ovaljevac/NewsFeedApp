@@ -79,9 +79,9 @@ fun FilterScreen(
         if (start != null && end != null) {
             "${formatter.format(Date(start))} - ${formatter.format(Date(end))}"
         } else {
-            "Nije izabran period"
+            "No date range selected"
         }
-    } ?: "Nije izabran period"
+    } ?: "No date range selected"
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -131,7 +131,7 @@ fun FilterScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                categories.filter { it.cat != "Vise filtera ..." }.forEach { category ->
+                categories.filter { it.cat != "More filters ..." }.forEach { category ->
                     FilterChipCustom(
                         category = category,
                         selected = selectedCategory,
@@ -157,7 +157,7 @@ fun FilterScreen(
             ) {
                 Icon(imageVector = Icons.Filled.DateRange, contentDescription = null)
                 Spacer(modifier = Modifier.width(10.dp))
-                Text("Izaberite opseg datuma")
+                Text("Select date range")
             }
 
             Text(
@@ -192,7 +192,7 @@ fun FilterScreen(
                     modifier = Modifier
                         .testTag("filter_unwanted_input")
                         .weight(1f),
-                    placeholder = { Text("Unesi rijec") }
+                    placeholder = { Text("Enter word") }
                 )
                 Button(
                     shape = RoundedCornerShape(12.dp),
@@ -240,7 +240,7 @@ fun FilterScreen(
                         .weight(1f),
                     onClick = onBack
                 ) {
-                    Text("Nazad")
+                    Text("Back")
                 }
                 Button(
                     shape = RoundedCornerShape(12.dp),
@@ -254,7 +254,7 @@ fun FilterScreen(
                         onApplyFilters(selectedCategory, selectedDate, unwantedList.toList())
                     }
                 ) {
-                    Text("Primijeni")
+                    Text("Apply")
                 }
             }
         }
@@ -329,15 +329,15 @@ private fun SectionTitle(text: String, action: String? = null) {
 
 private fun categoryToApi(category: String): String? {
     return when (category) {
-        "Politika" -> "politics"
-        "Sport" -> "sports"
-        "Nauka" -> "science"
-        "Tehnologija" -> "tech"
-        "Biznis" -> "business"
-        "Zdravlje" -> "health"
-        "Zabava" -> "entertainment"
-        "Hrana" -> "food"
-        "Putovanje" -> "travel"
+        "Politics" -> "politics"
+        "Sports" -> "sports"
+        "Science" -> "science"
+        "Technology" -> "tech"
+        "Business" -> "business"
+        "Health" -> "health"
+        "Entertainment" -> "entertainment"
+        "Food" -> "food"
+        "Travel" -> "travel"
         else -> null
     }
 }

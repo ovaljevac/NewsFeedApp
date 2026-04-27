@@ -1,5 +1,7 @@
 package etf.ri.rma.newsfeedapp.screen
 
+import android.content.Intent
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -31,6 +33,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,11 +43,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import etf.ri.rma.newsfeedapp.R
@@ -59,9 +64,9 @@ fun NewsDetailsScreen(
     viewModel: NewsViewModel = viewModel()
 ) {
     BackHandler { onBack() }
+    val context = LocalContext.current
 
     LaunchedEffect(news.uuid) {
-        viewModel.loadImageTags(news)
         viewModel.loadSimilarStories(news.uuid)
     }
 
@@ -164,46 +169,52 @@ fun NewsDetailsScreen(
                     color = MaterialTheme.colorScheme.outline
                 )
 
-                Text(
-                    text = news.description.ifBlank { news.snippet },
-                    style = MaterialTheme.typography.bodyLarge.copy(fontFamily = FontFamily.Serif),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.testTag("details_snippet")
-                )
-
-                if (news.imageTags.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(18.dp))
-                    Surface(
+                if (news.url.isNotBlank()) {
+                    OutlinedButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("details_story_link"),
                         shape = RoundedCornerShape(12.dp),
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
-                    ) {
-                        Column(modifier = Modifier.padding(14.dp)) {
-                            Text(
-                                text = "Key Takeaways",
-                                style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = news.imageTags.joinToString(", "),
-                                modifier = Modifier
-                                    .padding(top = 5.dp)
-                                    .testTag("details_image_tags"),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.tertiary
+                        onClick = {
+                            context.startActivity(
+                                Intent(Intent.ACTION_VIEW, Uri.parse(news.url))
                             )
                         }
+                    ) {
+                        Text(
+                            text = news.url,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
                     }
+
+                    Spacer(modifier = Modifier.height(18.dp))
                 }
+
+                ArticleBody(news)
 
                 Spacer(modifier = Modifier.height(22.dp))
                 Text(
-                    text = "Povezane vijesti",
+                    text = "Related News",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(10.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    viewModel.similarNewsItems.take(2).forEachIndexed { index, related ->
+                val relatedNews = viewModel.similarNewsItems
+                    .ifEmpty {
+                        viewModel.newsItems
+                            .filter { it.uuid != news.uuid && it.category == news.category }
+                    }
+                    .ifEmpty {
+                        viewModel.newsItems.filter { it.uuid != news.uuid }
+                    }
+                    .take(2)
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    relatedNews.forEachIndexed { index, related ->
                         RelatedNewsCard(
                             news = related,
                             modifier = Modifier
@@ -226,9 +237,47 @@ fun NewsDetailsScreen(
             shape = CircleShape,
             onClick = onBack
         ) {
-            Text("Nazad")
+            Text("Back")
         }
     }
+}
+
+@Composable
+private fun ArticleBody(news: NewsItem) {
+    val paragraphs = articleParagraphs(news)
+
+    Column(
+        modifier = Modifier.testTag("details_snippet"),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        paragraphs.forEach { paragraph ->
+            Text(
+                text = paragraph,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontFamily = FontFamily.Serif,
+                    lineHeight = 26.sp
+                ),
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+    }
+}
+
+private fun articleParagraphs(news: NewsItem): List<String> {
+    val description = news.description.trim()
+    val snippet = news.snippet.trim()
+    val parts = when {
+        description.isBlank() && snippet.isBlank() -> emptyList()
+        description.isBlank() -> listOf(snippet)
+        snippet.isBlank() -> listOf(description)
+        description.contains(snippet) -> listOf(description)
+        snippet.contains(description) -> listOf(snippet)
+        else -> listOf(description, snippet)
+    }
+
+    return parts
+        .ifEmpty { listOf("Full article text is unavailable for this story.") }
+        .flatMap { it.split("\n").map(String::trim).filter(String::isNotBlank) }
 }
 
 @Composable

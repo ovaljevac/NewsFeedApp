@@ -47,7 +47,7 @@ fun NewsFeedScreen(
     val apiCategory = viewModel.categoryMap[selectedCategory]
 
     val newsItemsFilter = newsItemsAll.filter { newsItem ->
-        val categoryMatch = selectedCategory == "Sve" || newsItem.category == apiCategory
+        val categoryMatch = selectedCategory == "All" || newsItem.category == apiCategory
         val dateMatch = selectedDateRange?.let { (start, end) ->
             val itemDate = runCatching { formatter.parse(newsItem.publishedDate)?.time }.getOrNull()
             itemDate != null && itemDate in (start ?: Long.MIN_VALUE)..(end ?: Long.MAX_VALUE)
@@ -61,8 +61,8 @@ fun NewsFeedScreen(
 
     LaunchedEffect(selectedCategory) {
         when (selectedCategory) {
-            "Sve" -> newsViewModel.loadAllStories()
-            "Vise filtera ..." -> Unit
+            "All" -> newsViewModel.loadAllStories()
+            "More filters ..." -> Unit
             else -> apiCategory?.let { newsViewModel.loadTopStoriesByCategory(it) }
         }
     }
@@ -122,7 +122,7 @@ fun NewsFeedScreen(
                         category = category,
                         selected = selectedCategory,
                         onSelected = {
-                            if (it != "Vise filtera ...") {
+                            if (it != "More filters ...") {
                                 viewModel.selectedCategory = it
                             }
                         },
@@ -133,8 +133,8 @@ fun NewsFeedScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            if (newsItemsFilter.isEmpty() && selectedCategory != "Vise filtera ...") {
-                MessageCard("Nema pronadjenih vijesti u kategoriji $selectedCategory")
+            if (newsItemsFilter.isEmpty() && selectedCategory != "More filters ...") {
+                MessageCard("No news found in the $selectedCategory category")
             } else {
                 key(selectedCategory) {
                     NewsList(

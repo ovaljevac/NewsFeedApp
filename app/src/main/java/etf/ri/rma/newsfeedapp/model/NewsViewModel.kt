@@ -9,7 +9,6 @@ import android.net.NetworkCapabilities
 import androidx.annotation.RequiresPermission
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import etf.ri.rma.newsfeedapp.api.ImagaDAO
 import etf.ri.rma.newsfeedapp.api.NewsDAO
@@ -26,6 +25,8 @@ class NewsViewModel (application: Application) : AndroidViewModel(application) {
     val newsItems = mutableStateListOf<NewsItem>()
     val similarNewsItems = mutableStateListOf<NewsItem>()
     private val lastLoadTime = mutableMapOf<String, Long>()
+    private val categoryCache = mutableMapOf<String, List<NewsItem>>()
+    private val similarStoriesCache = mutableMapOf<String, List<NewsItem>>()
     val tempNewsItems = mutableListOf<NewsItem>()
     private val localDao: SavedNewsDAO = NewsDatabase.getInstance(application).newsDao()
 
@@ -61,19 +62,21 @@ class NewsViewModel (application: Application) : AndroidViewModel(application) {
 
     fun loadTopStoriesPreview(category: String, locale: String = "us", limit: Int = 3) {
         val now = System.currentTimeMillis()
-        val lastTime = lastLoadTime[category] ?: 0L
-        val timeSinceLast = now - lastTime
-        if (timeSinceLast < 30_000L) {
+        val cached = categoryCache[category]
+        if (isFresh(category, now) && cached != null) {
+            tempNewsItems.clear()
+            tempNewsItems.addAll(cached.take(limit))
             return
         }
+
         viewModelScope.launch {
             try {
                 val result = withContext(Dispatchers.IO) {
                     dao.getTopStoriesByCategory(category, locale, limit)
                 }
+                cacheCategory(category, result, now)
                 tempNewsItems.clear()
                 tempNewsItems.addAll(result)
-                lastLoadTime[category] = now
             } catch (e: Exception) {
                 e.printStackTrace()
                 tempNewsItems.clear()
@@ -90,10 +93,12 @@ class NewsViewModel (application: Application) : AndroidViewModel(application) {
 
     fun loadTopStoriesByCategory(category: String, locale: String = "us", limit: Int = 3) {
         val now = System.currentTimeMillis()
-        val lastTime = lastLoadTime[category] ?: 0L
-        val timeSinceLast = now - lastTime
+        val cached = categoryCache[category]
 
-        if (timeSinceLast < 30_000L) return
+        if (isFresh(category, now) && cached != null) {
+            mergeIntoNewsItems(cached)
+            return
+        }
 
         viewModelScope.launch {
             if (isConnected()) {
@@ -112,14 +117,16 @@ class NewsViewModel (application: Application) : AndroidViewModel(application) {
                     val merged = (result + newsItems).distinctBy { it.uuid }
                     newsItems.clear()
                     newsItems.addAll(merged)
-                    lastLoadTime[category] = now
+                    cacheCategory(category, result, now)
                 } catch (e: Exception) {
                     e.printStackTrace()
+                    cached?.let { mergeIntoNewsItems(it) }
                 }
             } else {
                 val result = withContext(Dispatchers.IO) {
                     localDao.getNewsWithCategory(category)
                 }
+                cacheCategory(category, result, now)
                 newsItems.clear()
                 newsItems.addAll(result)
             }
@@ -128,24 +135,53 @@ class NewsViewModel (application: Application) : AndroidViewModel(application) {
 
 
     fun loadSimilarStories(uuid: String) {
+        val cached = similarStoriesCache[uuid]
+        if (cached != null) {
+            similarNewsItems.clear()
+            similarNewsItems.addAll(cached)
+            return
+        }
+
+        similarNewsItems.clear()
+
         viewModelScope.launch {
+            val currentNews = findNewsByUuid(uuid)
+            val fallback = relatedFromAvailableStories(uuid, currentNews?.category)
+            if (fallback.isNotEmpty()) {
+                similarNewsItems.clear()
+                similarNewsItems.addAll(fallback)
+            }
+
             if (isConnected()) {
                 try {
                     val result = dao.getSimilarStories(uuid)
+                        .filter { it.uuid != uuid }
+                        .ifEmpty { fallback }
+                        .take(2)
                     similarNewsItems.clear()
                     similarNewsItems.addAll(result)
+                    cacheSimilarStories(uuid, result)
 
                     val newUniqueItems = result.filter { newItem ->
                         newsItems.none { it.uuid == newItem.uuid }
                     }
                     newsItems.addAll(newUniqueItems)
-                } catch (e: InvalidUUIDException) {
+                } catch (e: Exception) {
                     similarNewsItems.clear()
+                    similarNewsItems.addAll(fallback)
+                    cacheSimilarStories(uuid, fallback)
                 }
             } else {
                 val news = withContext(Dispatchers.IO) {
                     localDao.allNews().find { it.uuid == uuid }
-                } ?: return@launch
+                }
+
+                if (news == null) {
+                    similarNewsItems.clear()
+                    similarNewsItems.addAll(fallback)
+                    cacheSimilarStories(uuid, fallback)
+                    return@launch
+                }
 
                 val tags = withContext(Dispatchers.IO) {
                     localDao.getTags(newsId = localDao.getIdByUuid(uuid) ?: return@withContext emptyList())
@@ -155,8 +191,12 @@ class NewsViewModel (application: Application) : AndroidViewModel(application) {
                     localDao.getSimilarNews(tags).take(2)
                 }
 
+                val result = similar.filter { it.uuid != uuid }
+                    .ifEmpty { relatedFromAvailableStories(uuid, news.category) }
+                    .take(2)
                 similarNewsItems.clear()
-                similarNewsItems.addAll(similar.filter { it.uuid != uuid })
+                similarNewsItems.addAll(result)
+                cacheSimilarStories(uuid, result)
             }
         }
     }
@@ -197,5 +237,55 @@ class NewsViewModel (application: Application) : AndroidViewModel(application) {
 
 
 
+
+    private fun isFresh(key: String, now: Long = System.currentTimeMillis()): Boolean {
+        val lastTime = lastLoadTime[key] ?: return false
+        return now - lastTime < 30_000L
+    }
+
+    private fun cacheCategory(category: String, items: List<NewsItem>, now: Long = System.currentTimeMillis()) {
+        if (items.isNotEmpty()) {
+            categoryCache[category] = items
+            lastLoadTime[category] = now
+        }
+    }
+
+    private fun mergeIntoNewsItems(items: List<NewsItem>) {
+        val merged = (items + newsItems).distinctBy { it.uuid }
+        newsItems.clear()
+        newsItems.addAll(merged)
+    }
+
+    private suspend fun findNewsByUuid(uuid: String): NewsItem? {
+        newsItems.find { it.uuid == uuid }?.let { return it }
+
+        return withContext(Dispatchers.IO) {
+            localDao.allNews().find { it.uuid == uuid }
+                ?: dao.getAllStories().find { it.uuid == uuid }
+        }
+    }
+
+    private suspend fun relatedFromAvailableStories(uuid: String, category: String?): List<NewsItem> {
+        val loadedStories = newsItems.toList()
+        val localStories = withContext(Dispatchers.IO) { localDao.allNews() }
+        val seedStories = withContext(Dispatchers.IO) { dao.getAllStories() }
+        val candidates = (loadedStories + localStories + seedStories)
+            .distinctBy { it.uuid }
+            .filter { it.uuid != uuid }
+
+        val sameCategory = candidates
+            .filter { it.uuid != uuid && category != null && it.category == category }
+            .take(2)
+
+        return sameCategory.ifEmpty {
+            candidates.take(2)
+        }
+    }
+
+    private fun cacheSimilarStories(uuid: String, items: List<NewsItem>) {
+        if (items.isNotEmpty()) {
+            similarStoriesCache[uuid] = items
+        }
+    }
 
 }
